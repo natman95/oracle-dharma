@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TCONSIAM — Deployment Guide</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #0a0a12; color: #e2e8f0; min-height: 100vh; }
+
+    .header { background: linear-gradient(135deg, #1a1a3e 0%, #4c1d95 100%); padding: 24px 20px; text-align: center; }
+    .header h1 { font-size: 1.5rem; color: #fff; margin-bottom: 4px; }
+    .header p { font-size: 0.85rem; color: #c4b5fd; }
+
+    .breadcrumb { padding: 12px 20px; background: rgba(255,255,255,0.02); border-bottom: 1px solid rgba(255,255,255,0.06); font-size: 0.8rem; }
+    .breadcrumb a { color: #3b82f6; text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+
+    .container { max-width: 1000px; margin: 0 auto; padding: 20px 16px; }
+
+    .card { background: #12121a; border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+    .card h2 { font-size: 1rem; color: #f59e0b; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    .card h3 { font-size: 0.85rem; color: #c4b5fd; margin: 12px 0 6px; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+    th { text-align: left; padding: 8px; color: #9ca3af; font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.02); }
+    td { padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.04); color: #d1d5db; }
+    tr:hover td { background: rgba(255,255,255,0.02); }
+
+    code { background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 4px; font-size: 0.78rem; color: #c4b5fd; font-family: 'Monaco', 'Menlo', monospace; }
+    pre { background: #1a1a2e; border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 14px; overflow-x: auto; font-size: 0.75rem; color: #a5b4fc; margin: 8px 0; font-family: 'Monaco', 'Menlo', monospace; line-height: 1.5; }
+
+    .highlight { background: rgba(245, 158, 11, 0.1); border-left: 3px solid #f59e0b; padding: 10px 12px; border-radius: 4px; margin: 8px 0; font-size: 0.85rem; }
+    .danger { background: rgba(239, 68, 68, 0.1); border-left: 3px solid #ef4444; padding: 10px 12px; border-radius: 4px; margin: 8px 0; font-size: 0.85rem; }
+
+    .section-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 8px 0; }
+    .section-item { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 12px; }
+    .section-item .label { font-size: 0.7rem; color: #9ca3af; text-transform: uppercase; margin-bottom: 4px; }
+    .section-item .value { font-size: 0.9rem; color: #a78bfa; font-weight: 600; }
+
+    .link-btn { display: inline-block; background: #4c1d95; color: #fff; text-decoration: none; padding: 8px 16px; border-radius: 8px; font-size: 0.8rem; margin: 4px 4px 4px 0; transition: background 0.2s; }
+    .link-btn:hover { background: #7c3aed; }
+
+    .nav-bottom { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.06); }
+
+    ul { padding-left: 18px; }
+    li { padding: 3px 0; font-size: 0.82rem; color: #d1d5db; }
+
+    .flow { background: #1a1a2e; border-left: 3px solid #a78bfa; padding: 12px; border-radius: 4px; margin: 8px 0; font-size: 0.8rem; }
+
+    .step-num { display: inline-block; background: #4c1d95; color: #fff; width: 24px; height: 24px; border-radius: 50%; text-align: center; line-height: 24px; font-size: 0.75rem; font-weight: 700; margin-right: 6px; }
+
+    @media (max-width: 640px) {
+      .section-grid { grid-template-columns: 1fr; }
+      .header h1 { font-size: 1.2rem; }
+      pre { font-size: 0.7rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Deployment Guide</h1>
+  <p>VPS Infrastructure, Nginx, Systemd, and Production Workflow</p>
+</div>
+
+<div class="breadcrumb">
+  <a href="/maw/">MAW Dashboard</a> / <a href="/maw/tconsiam/">TCONSIAM KB</a> / Deployment Guide
+</div>
+
+<div class="container">
+
+  <!-- Infrastructure Overview -->
+  <div class="card">
+    <h2>Infrastructure Overview</h2>
+
+    <div class="section-grid">
+      <div class="section-item">
+        <div class="label">VPS IP</div>
+        <div class="value">76.13.221.42</div>
+      </div>
+      <div class="section-item">
+        <div class="label">OS</div>
+        <div class="value">Ubuntu 20.04 LTS</div>
+      </div>
+      <div class="section-item">
+        <div class="label">RAM</div>
+        <div class="value">4GB + 4GB Swap</div>
+      </div>
+      <div class="section-item">
+        <div class="label">Storage</div>
+        <div class="value">~100GB SSD</div>
+      </div>
+      <div class="section-item">
+        <div class="label">Runtime</div>
+        <div class="value">Bun v1.x</div>
+      </div>
+      <div class="section-item">
+        <div class="label">Process Manager</div>
+        <div class="value">Systemd</div>
+      </div>
+    </div>
+
+    <h3>Architecture</h3>
+    <pre>
+Browser (:8890)
+   │
+   ├── Static files ──> Nginx ──> /opt/tconsiam-dashboard/
+   │
+   └── /api/* ────────> Nginx (reverse proxy) ──> Bun + Hono (:3457)
+                                                       │
+                                                       └──> SQLite DB
+    </pre>
+  </div>
+
+  <!-- Services -->
+  <div class="card">
+    <h2>Services</h2>
+
+    <h3>API Server (Bun + Hono)</h3>
+    <table>
+      <tr><td style="width:35%; color:#9ca3af">Service</td><td><code>tconsiam-api.service</code></td></tr>
+      <tr><td style="color:#9ca3af">Port</td><td><code>3457</code> (internal only)</td></tr>
+      <tr><td style="color:#9ca3af">Status</td><td><code>systemctl status tconsiam-api</code></td></tr>
+      <tr><td style="color:#9ca3af">Restart</td><td><code>systemctl restart tconsiam-api</code></td></tr>
+      <tr><td style="color:#9ca3af">Logs</td><td><code>journalctl -u tconsiam-api -f</code></td></tr>
+      <tr><td style="color:#9ca3af">Health</td><td><code>curl http://localhost:3457/api/health</code></td></tr>
+    </table>
+
+    <h3>Nginx (Web Server)</h3>
+    <table>
+      <tr><td style="width:35%; color:#9ca3af">Port</td><td><code>8890</code> (public)</td></tr>
+      <tr><td style="color:#9ca3af">Config</td><td><code>/etc/nginx/sites-enabled/tconsiam</code></td></tr>
+      <tr><td style="color:#9ca3af">Static Root</td><td><code>/opt/tconsiam-dashboard/</code></td></tr>
+      <tr><td style="color:#9ca3af">Reverse Proxy</td><td><code>/api/* -> http://localhost:3457/</code></td></tr>
+      <tr><td style="color:#9ca3af">Test Config</td><td><code>nginx -t</code></td></tr>
+      <tr><td style="color:#9ca3af">Reload</td><td><code>nginx -s reload</code></td></tr>
+    </table>
+  </div>
+
+  <!-- Deploy Steps -->
+  <div class="card">
+    <h2>Deployment Checklist</h2>
+
+    <table>
+      <thead><tr><th>Step</th><th>Command / Action</th><th>Verify</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="step-num">1</span> <strong>Backup DB</strong></td>
+          <td><code>sqlite3 ~/.config/tconsiam/db/tconsiam.db ".backup /tmp/tconsiam-pre-deploy.db"</code></td>
+          <td>Backup file exists</td>
+        </tr>
+        <tr>
+          <td><span class="step-num">2</span> <strong>Build UI</strong></td>
+          <td><code>cd /root/projects/tcon/ui && bunx vite build</code></td>
+          <td><code>dist/</code> created, size &lt;2MB</td>
+        </tr>
+        <tr>
+          <td><span class="step-num">3</span> <strong>Copy to VPS</strong></td>
+          <td><code>cp -r dist/* /opt/tconsiam-dashboard/</code></td>
+          <td><code>index.html</code> present in destination</td>
+        </tr>
+        <tr>
+          <td><span class="step-num">4</span> <strong>Restart API</strong></td>
+          <td><code>systemctl restart tconsiam-api</code></td>
+          <td><code>systemctl status tconsiam-api</code> shows active</td>
+        </tr>
+        <tr>
+          <td><span class="step-num">5</span> <strong>Health Check</strong></td>
+          <td><code>curl http://localhost:3457/api/health</code></td>
+          <td>Returns <code>{"status":"ok"}</code></td>
+        </tr>
+        <tr>
+          <td><span class="step-num">6</span> <strong>Browser Test</strong></td>
+          <td>Open <code>http://76.13.221.42:8890/</code></td>
+          <td>Login page loads, assets cached</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Using deploy.sh</h3>
+    <pre>
+cd /root/projects/tcon
+./deploy.sh
+# Automated steps:
+#   1. Builds UI (vite build)
+#   2. Copies dist/ to /opt/tconsiam-dashboard/
+#   3. Restarts tconsiam-api.service
+#   4. Runs health check
+    </pre>
+  </div>
+
+  <!-- Nginx Config -->
+  <div class="card">
+    <h2>Nginx Configuration</h2>
+    <pre>
+# /etc/nginx/sites-enabled/tconsiam
+server {
+    listen 8890;
+    server_name _;
+
+    root /opt/tconsiam-dashboard;
+    index index.html;
+
+    # SPA fallback — all routes serve index.html
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # API reverse proxy
+    location /api/ {
+        proxy_pass http://127.0.0.1:3457;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+
+    # Cache static assets
+    location /assets/ {
+        expires 30d;
+        add_header Cache-Control "public, immutable";
+    }
+}
+    </pre>
+  </div>
+
+  <!-- Systemd Service -->
+  <div class="card">
+    <h2>Systemd Service</h2>
+    <pre>
+# /etc/systemd/system/tconsiam-api.service
+[Unit]
+Description=TCONSIAM API Server
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/root/projects/tcon/api
+ExecStart=/root/.bun/bin/bun run src/index.ts
+Restart=on-failure
+RestartSec=5
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=multi-user.target
+    </pre>
+
+    <h3>Common Commands</h3>
+    <pre>
+systemctl start tconsiam-api      # Start
+systemctl stop tconsiam-api       # Stop
+systemctl restart tconsiam-api    # Restart
+systemctl status tconsiam-api     # Status
+systemctl enable tconsiam-api     # Auto-start on boot
+journalctl -u tconsiam-api -f     # Follow logs
+journalctl -u tconsiam-api -n 50  # Last 50 lines
+    </pre>
+  </div>
+
+  <!-- Rollback -->
+  <div class="card">
+    <h2>Rollback Procedure</h2>
+
+    <div class="danger">
+      <strong>Rule:</strong> Always backup before deploy. Nothing is Deleted.
+    </div>
+
+    <h3>Rollback UI</h3>
+    <pre>
+# If UI deploy breaks something:
+# Git has the previous build, or use backup
+cd /root/projects/tcon/ui
+git stash   # Save current changes
+git checkout HEAD~1 -- dist/
+cp -r dist/* /opt/tconsiam-dashboard/
+    </pre>
+
+    <h3>Rollback Database</h3>
+    <pre>
+systemctl stop tconsiam-api
+cp /tmp/tconsiam-pre-deploy.db ~/.config/tconsiam/db/tconsiam.db
+systemctl start tconsiam-api
+    </pre>
+
+    <h3>Rollback API</h3>
+    <pre>
+cd /root/projects/tcon/api
+git log --oneline -5              # Find last good commit
+git checkout &lt;commit-hash&gt; -- src/
+systemctl restart tconsiam-api
+    </pre>
+  </div>
+
+  <!-- Troubleshooting -->
+  <div class="card">
+    <h2>Troubleshooting</h2>
+
+    <h3>API won't start</h3>
+    <ul>
+      <li>Check logs: <code>journalctl -u tconsiam-api -n 50</code></li>
+      <li>Verify Bun installed: <code>bun --version</code></li>
+      <li>Check port conflict: <code>lsof -i :3457</code></li>
+      <li>Verify DB file exists: <code>ls ~/.config/tconsiam/db/</code></li>
+    </ul>
+
+    <h3>Nginx errors</h3>
+    <ul>
+      <li>Test config: <code>nginx -t</code></li>
+      <li>Check logs: <code>tail -20 /var/log/nginx/error.log</code></li>
+      <li>Verify static files: <code>ls /opt/tconsiam-dashboard/index.html</code></li>
+    </ul>
+
+    <h3>SPA shows blank page</h3>
+    <ul>
+      <li>Check browser console for JS errors</li>
+      <li>Verify JS/CSS asset files exist in <code>/opt/tconsiam-dashboard/assets/</code></li>
+      <li>Clear browser cache or hard refresh</li>
+      <li>Check URL uses hash routing: <code>/#/dashboard</code></li>
+    </ul>
+
+    <h3>502 Bad Gateway</h3>
+    <ul>
+      <li>API is down — restart: <code>systemctl restart tconsiam-api</code></li>
+      <li>Port mismatch — verify nginx proxies to correct port</li>
+    </ul>
+  </div>
+
+  <!-- Monitoring -->
+  <div class="card">
+    <h2>Health Monitoring</h2>
+    <p style="margin-bottom: 12px; font-size: 0.85rem; color: #d1d5db;">Pulse Oracle monitors TCONSIAM health continuously.</p>
+
+    <div class="section-grid">
+      <div class="section-item">
+        <div class="label">Health Endpoint</div>
+        <div class="value">:3457/api/health</div>
+      </div>
+      <div class="section-item">
+        <div class="label">External Ping</div>
+        <div class="value">healthchecks.io</div>
+      </div>
+      <div class="section-item">
+        <div class="label">Alerts</div>
+        <div class="value">Discord Webhook</div>
+      </div>
+      <div class="section-item">
+        <div class="label">Health Script</div>
+        <div class="value">tconsiam-healthcheck.sh</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <div class="card">
+    <h2>Related Guides</h2>
+    <div class="nav-bottom">
+      <a href="architecture.html" class="link-btn">Architecture</a>
+      <a href="database.html" class="link-btn">Database</a>
+      <a href="modules.html" class="link-btn">Modules</a>
+      <a href="/maw/tconsiam/api-reference.html" class="link-btn">API Reference</a>
+      <a href="/maw/tconsiam/" class="link-btn">Back to KB</a>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

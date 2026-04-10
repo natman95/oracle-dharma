@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCONSIAM ERP - Latest Learnings</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #0a0a12; color: #e5e7eb; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 2rem; }
+        h1 { color: #c084fc; margin-bottom: 0.5rem; }
+        .subtitle { color: rgba(255,255,255,0.4); font-size: 0.85rem; margin-bottom: 2rem; }
+        .learning-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 1rem; padding: 1.5rem; margin-bottom: 1rem; }
+        .learning-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .oracle-badge { background: rgba(168,85,247,0.15); color: #c084fc; padding: 0.25rem 0.75rem; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; }
+        .learning-date { color: rgba(255,255,255,0.3); font-size: 0.75rem; font-family: monospace; }
+        .learning-body { color: rgba(255,255,255,0.6); font-size: 0.9rem; line-height: 1.6; white-space: pre-wrap; }
+        .learning-body h3 { color: #e2e8f0; margin: 1rem 0 0.5rem; font-size: 1rem; }
+        .learning-body li { margin-left: 1.5rem; margin-bottom: 0.25rem; }
+        .learning-body strong { color: #fbbf24; }
+        .generated { color: rgba(255,255,255,0.2); font-size: 0.7rem; margin-top: 2rem; text-align: center; }
+    </style>
+</head>
+<body>
+    <h1>Latest Learnings</h1>
+    <p class="subtitle">Auto-generated from Oracle ψ/memory/learnings/ — 2026-04-10 04:37 UTC</p>
+
+<div class="learning-card">
+  <div class="learning-header">
+    <span class="oracle-badge">echo</span>
+    <span class="learning-date">2026-04-09_external-validation-power</span>
+  </div>
+  <div class="learning-body">
+<h3>Lesson: External Validation Transforms Confidence</h3>
+
+&gt; Echo Oracle 📚 | From: /rrr | 2026-04-09
+
+<h3>The Lesson</h3>
+
+Beliefs stuck at 3-4/5 confidence can jump to 5/5 immediately when confirmed in an unrelated codebase. Internal validation (same ecosystem) builds confidence linearly. External validation (different ecosystem) builds confidence exponentially.
+
+<h3>Evidence</h3>
+
+<li>7 beliefs from MAW ecosystem stayed at 2-4/5 across 3 internal studies</li>
+<li>1 external study (n8n, 17k files, completely different domain) graduated all 7 to 5/5</li>
+<li>The "63% coverage" number appeared independently in both MAW and n8n (frontend handles ~63% of backend push types)</li>
+
+<h3>Application</h3>
+
+When validating architectural patterns:
+1. Study 2-3 repos in the same ecosystem first (cheap, fast)
+2. Then study 1 repo in a completely different ecosystem (expensive, but decisive)
+3. If the pattern holds across ecosystems, it's a principle
+
+---
+*Source: rrr, echo-oracle, 2026-04-09*
+  </div>
+</div>
+<div class="learning-card">
+  <div class="learning-header">
+    <span class="oracle-badge">labubu</span>
+    <span class="learning-date">2026-04-09_modal-portal-pattern</span>
+  </div>
+  <div class="learning-body">
+<h3>CSS Transform Traps Fixed Positioning — Use Portal</h3>
+
+<strong>Date</strong>: 2026-04-09
+<strong>Source</strong>: TCONSIAM ERP Modal bug
+<strong>Confidence</strong>: High (verified fix)
+
+<h3>Pattern</h3>
+
+When a parent element has CSS `transform` (even from animations like `fadeIn` with `translateY`), it creates a new <strong>containing block</strong> for `position: fixed` descendants. This means the "fixed" element is no longer relative to the viewport — it's trapped inside the parent.
+
+<h3>Symptoms</h3>
+
+<li>Modal appears inside content area instead of full-screen overlay</li>
+<li>User reports "stuck in small box" or needs to scroll within modal</li>
+<li>`position: fixed` + `inset: 0` doesn't cover viewport</li>
+
+<h3>Fix</h3>
+
+Use React `createPortal(jsx, document.body)` to render modals at document root, bypassing any parent transform/filter/will-change containing blocks.
+
+<h3>Also Triggers On</h3>
+
+<li>`filter` property on parent</li>
+<li>`will-change: transform` on parent  </li>
+<li>`backdrop-filter` on parent</li>
+<li>`contain: paint` on parent</li>
+
+<h3>TCONSIAM Context</h3>
+
+<li>`animate-fade-in` uses `transform: translateY(8px)` → trapped Modal</li>
+<li>Fixed in `ui/src/components/ui/Modal.tsx` with `createPortal`</li>
+<li>All modals across 17+ modules benefited from this single fix</li>
+  </div>
+</div>
+<div class="learning-card">
+  <div class="learning-header">
+    <span class="oracle-badge">neo</span>
+    <span class="learning-date">2026-04-09_boss-standardized-stack</span>
+  </div>
+  <div class="learning-body">
+<h3>Lesson: Boss's Standardized Stack</h3>
+
+<strong>Date</strong>: 2026-04-09
+<strong>Source</strong>: rrr: neo-oracle (TCONSIAM KB study)
+
+<h3>Pattern</h3>
+
+Boss uses the same tech stack across all projects:
+
+| Layer | Standard |
+|-------|----------|
+| Runtime | Bun |
+| HTTP | Hono |
+| ORM | Drizzle |
+| DB | SQLite (WAL mode) |
+| UI | React 19 |
+| Build | Vite |
+| CSS | Tailwind 4 |
+| State | Zustand |
+
+Confirmed in: TCONSIAM ERP, MAW-JS, MAW-UI, MAW Dashboard Pro
+
+<h3>Rule</h3>
+
+<li>Don't propose alternative stacks (Next.js, Prisma, Postgres, etc.)</li>
+<li>Follow TCONSIAM's module pattern: schema → migrate → api → mount → UI → register</li>
+<li>Use named-key API responses: `{ items: [...] }` not bare arrays</li>
+<li>Use structured audit logging, not ad-hoc JSONL</li>
+
+<h3>Tags</h3>
+architecture, stack, standardization, boss-preference
+  </div>
+</div>
+<div class="learning-card">
+  <div class="learning-header">
+    <span class="oracle-badge">pulse</span>
+    <span class="learning-date">2026-04-09_deep-guardian-evolution</span>
+  </div>
+  <div class="learning-body">
+<h3>Lesson: Guardian Evolution — From Reactive to Autonomous</h3>
+
+<strong>Date</strong>: 2026-04-09
+<strong>Source</strong>: rrr --deep: pulse-oracle
+<strong>Confidence</strong>: High (validated across 5 analysis agents)
+
+<h3>Core Insight</h3>
+
+A guardian that only watches when asked is a diagnostic tool, not a guardian. The evolution path is: reactive scanning → scheduled heartbeat → pattern detection → autonomous alerting → predictive prevention.
+
+<h3>Patterns Identified</h3>
+
+<h3>1. Guardian's Paradox Has Layers</h3>
+<li>Layer 1: "Am I alive?" → Solved by healthchecks.io external ping</li>
+<li>Layer 2: "Am I correct?" → NOT solved. heartbeat.sh could report wrong data without detection</li>
+<li>Layer 3: "Am I watching the right things?" → Requires baseline comparison and drift detection</li>
+<li><strong>Action</strong>: Build self-verification into heartbeat.sh</li>
+
+<h3>2. Documentation IS the Output (65/35 Rule)</h3>
+<li>65% of Pulse's first-week output was written analysis (reports, insights, proposals)</li>
+<li>35% was executable code (heartbeat.sh, API, dashboard)</li>
+<li>This ratio is correct for a guardian role — understanding &gt; building</li>
+<li><strong>Pattern</strong>: Guardian Oracles produce more analysis than code</li>
+
+<h3>3. Schema Drift = Multi-Oracle Reality</h3>
+<li>Shared codebases mutate between Oracle sessions</li>
+<li>4 new tables appeared while Pulse was mid-mission</li>
+<li><strong>Rule</strong>: Always re-read, never assume unchanged</li>
+<li><strong>Why</strong>: Multiple Oracles + Boss edit simultaneously</li>
+
+<h3>4. /rrr Timing Matters</h3>
+<li>Waiting until 184k context to run /rrr = too late</li>
+<li>Deep analysis with 5 agents adds ~20k tokens</li>
+<li><strong>Rule</strong>: /rrr at natural milestones, not at pressure points</li>
+
+<h3>5. Transport Reliability for Guardians</h3>
+<li>CLI bridge truncates messages at ~80 chars</li>
+<li>Guardians need reliable instruction/alert channels</li>
+<li>Discord webhook works for outbound alerts</li>
+<li>Inbound instructions still fragile via CLI bridge</li>
+
+<h3>Connections to Past Learnings</h3>
+
+<li>"File watch restarts ≠ crashes" → instance of Principle 2 (Patterns Over Intentions)</li>
+<li>"External monitoring solves paradox" → instance of Principle 5 (Form and Formless — distributed systems)</li>
+<li>"Seed data immediately" → instance of Principle 4 (Curiosity Creates Existence — verify by doing)</li>
+
+<h3>Tags</h3>
+guardian, monitoring, evolution, self-verification, multi-oracle, retrospective
+  </div>
+</div>
+    <p class="generated">Generated by Echo Oracle 📚 — KB Auto-Update Phase 3</p>
+</body>
+</html>

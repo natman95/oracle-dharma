@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TCONSIAM ERP — Knowledge Base</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #0a0a12; color: #e2e8f0; min-height: 100vh; }
+
+    .header { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); padding: 32px 20px 28px; text-align: center; border-bottom: 1px solid rgba(99,102,241,0.2); }
+    .header h1 { font-size: 1.6rem; color: #fff; margin-bottom: 4px; letter-spacing: 0.5px; }
+    .header p { font-size: 0.85rem; color: #818cf8; margin-bottom: 12px; }
+    .header .badge { display: inline-block; background: #10b981; color: #fff; font-size: 0.65rem; padding: 3px 12px; border-radius: 12px; font-weight: 600; letter-spacing: 0.5px; }
+
+    .container { max-width: 880px; margin: 0 auto; padding: 24px 16px; }
+
+    /* Quick Actions */
+    .actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 16px; }
+    .action-btn { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.08); color: #e2e8f0; text-decoration: none; padding: 8px 16px; border-radius: 8px; font-size: 0.8rem; transition: all 0.2s; border: 1px solid rgba(255,255,255,0.06); }
+    .action-btn:hover { background: rgba(255,255,255,0.14); transform: translateY(-1px); }
+    .action-btn.primary { background: #059669; border-color: rgba(16,185,129,0.3); }
+    .action-btn.primary:hover { background: #10b981; }
+
+    /* Stats Row */
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 24px; }
+    .stat { background: #12121a; border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 16px 12px; text-align: center; }
+    .stat .num { font-size: 1.6rem; font-weight: 700; color: #f59e0b; }
+    .stat .label { font-size: 0.7rem; color: #9ca3af; margin-top: 2px; }
+
+    /* Section title */
+    .section-title { font-size: 0.75rem; color: #6b7280; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px; padding-left: 4px; }
+
+    /* Guide Cards */
+    .guides { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; margin-bottom: 24px; }
+    .guide-card { display: block; background: #12121a; border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 20px; text-decoration: none; transition: all 0.2s; position: relative; overflow: hidden; }
+    .guide-card:hover { border-color: rgba(99,102,241,0.3); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+    .guide-card .icon { font-size: 1.4rem; margin-bottom: 8px; }
+    .guide-card .title { font-size: 0.95rem; color: #fff; font-weight: 600; margin-bottom: 6px; }
+    .guide-card .desc { font-size: 0.78rem; color: #9ca3af; line-height: 1.5; }
+    .guide-card .tag { display: inline-block; font-size: 0.6rem; padding: 2px 8px; border-radius: 4px; margin-top: 10px; font-weight: 600; letter-spacing: 0.5px; }
+    .tag-guide { background: rgba(99,102,241,0.15); color: #818cf8; }
+    .tag-api { background: rgba(245,158,11,0.15); color: #f59e0b; }
+    .tag-learn { background: rgba(16,185,129,0.15); color: #34d399; }
+    .tag-data { background: rgba(168,85,247,0.15); color: #c084fc; }
+
+    /* Tech Stack */
+    .stack { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px; margin-bottom: 24px; }
+    .stack-card { background: #12121a; border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 16px; }
+    .stack-card .stack-label { font-size: 0.7rem; color: #6b7280; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+    .stack-card .stack-value { font-size: 0.82rem; color: #e2e8f0; }
+    .stack-card code { background: rgba(99,102,241,0.1); color: #a5b4fc; padding: 1px 5px; border-radius: 3px; font-size: 0.75rem; }
+
+    .footer { text-align: center; padding: 24px; color: #4b5563; font-size: 0.7rem; }
+    .footer a { color: #6b7280; text-decoration: none; }
+    .footer a:hover { color: #9ca3af; }
+
+    @media (max-width: 640px) {
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .guides { grid-template-columns: 1fr; }
+      .header h1 { font-size: 1.3rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>TCONSIAM ERP</h1>
+  <p>Knowledge Base</p>
+  <span class="badge">PRODUCTION</span>
+
+  <div class="actions">
+    <a href="http://76.13.221.42:8890/" class="action-btn primary" target="_blank">Open ERP</a>
+    <a href="/maw/" class="action-btn">MAW Dashboard</a>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat"><div class="num">17</div><div class="label">Modules</div></div>
+    <div class="stat"><div class="num">8</div><div class="label">Features</div></div>
+    <div class="stat"><div class="num">27</div><div class="label">Migrations</div></div>
+    <div class="stat"><div class="num">19</div><div class="label">API Routes</div></div>
+  </div>
+
+  <!-- Guides -->
+  <div class="section-title">Guides</div>
+  <div class="guides">
+    <a href="/maw/tconsiam/guides/architecture.html" class="guide-card">
+      <div class="icon">&#x1f3d7;</div>
+      <div class="title">Architecture</div>
+      <div class="desc">System design, directory structure, data flow, infrastructure, and deployment</div>
+      <span class="tag tag-guide">GUIDE</span>
+    </a>
+    <a href="/maw/tconsiam/guides/modules.html" class="guide-card">
+      <div class="icon">&#x1f4e6;</div>
+      <div class="title">Modules</div>
+      <div class="desc">All 17 modules deep dive — DB tables, API endpoints, UI components</div>
+      <span class="tag tag-guide">GUIDE</span>
+    </a>
+    <a href="/maw/tconsiam/guides/workflows.html" class="guide-card">
+      <div class="icon">&#x1f6e0;</div>
+      <div class="title">Dev Workflows</div>
+      <div class="desc">Development setup, deploy process, adding modules, key patterns, pitfalls</div>
+      <span class="tag tag-guide">GUIDE</span>
+    </a>
+    <a href="/maw/tconsiam/api-reference.html" class="guide-card">
+      <div class="icon">&#x1f50c;</div>
+      <div class="title">API Reference</div>
+      <div class="desc">All 19 route modules with endpoints, methods, request/response examples</div>
+      <span class="tag tag-api">API</span>
+    </a>
+    <a href="/maw/tconsiam/learnings/latest.html" class="guide-card">
+      <div class="icon">&#x1f4a1;</div>
+      <div class="title">Latest Learnings</div>
+      <div class="desc">Recent discoveries, patterns, and lessons from the Oracle family</div>
+      <span class="tag tag-learn">LEARNING</span>
+    </a>
+    <a href="/maw/tconsiam/guides/maw-js.html" class="guide-card">
+      <div class="icon">&#x1f680;</div>
+      <div class="title">MAW-JS v1.8.0</div>
+      <div class="desc">Multi-agent orchestration — 58+ CLI commands, federation mesh, real-time dashboard</div>
+      <span class="tag tag-guide">GUIDE</span>
+    </a>
+    <a href="/maw/tconsiam/guides/oracle-skills.html" class="guide-card">
+      <div class="icon">&#x2728;</div>
+      <div class="title">Oracle Skills CLI</div>
+      <div class="desc">arra-oracle-skills-cli v3.6.1 — 26 skills for 186+ Oracle agents</div>
+      <span class="tag tag-guide">GUIDE</span>
+    </a>
+    <a href="/maw/tconsiam/guides/erp-modules.html" class="guide-card">
+      <div class="icon">&#x1f4ca;</div>
+      <div class="title">ERP Modules Reference</div>
+      <div class="desc">35 modules for Thai enterprise — CORE/STANDARD/ADVANCED + legal requirements + FigJam diagram</div>
+      <span class="tag tag-data">RESEARCH</span>
+    </a>
+  </div>
+
+  <!-- Tech Stack -->
+  <div class="section-title">Tech Stack</div>
+  <div class="stack">
+    <div class="stack-card">
+      <div class="stack-label">Backend</div>
+      <div class="stack-value"><code>Bun</code> + <code>Hono</code> + <code>Drizzle ORM</code> + <code>SQLite</code></div>
+    </div>
+    <div class="stack-card">
+      <div class="stack-label">Frontend</div>
+      <div class="stack-value"><code>React 19</code> + <code>Vite</code> + <code>Tailwind 4</code> + <code>Zustand</code></div>
+    </div>
+    <div class="stack-card">
+      <div class="stack-label">Infrastructure</div>
+      <div class="stack-value">VPS <code>76.13.221.42</code> &middot; Port <code>8890</code> &middot; systemd + nginx</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  TCONSIAM ERP Knowledge Base &middot; Updated 2026-04-09<br>
+  <a href="/maw/">MAW Dashboard</a> &middot; <a href="http://76.13.221.42:8890/" target="_blank">Open ERP</a>
+</div>
+
+</body>
+</html>

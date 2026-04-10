@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TCONSIAM ERP — API Reference</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #0a0a12; color: #e2e8f0; min-height: 100vh; }
+
+    .header { background: linear-gradient(135deg, #1a3a5c 0%, #2b6cb0 100%); padding: 24px 20px; text-align: center; }
+    .header h1 { font-size: 1.5rem; color: #fff; margin-bottom: 4px; }
+    .header p { font-size: 0.85rem; color: #93c5fd; }
+    .header .badge { display: inline-block; background: #10b981; color: #fff; font-size: 0.7rem; padding: 2px 10px; border-radius: 12px; margin-top: 8px; }
+
+    .container { max-width: 960px; margin: 0 auto; padding: 20px 16px; }
+
+    .card { background: #12121a; border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+    .card h2 { font-size: 1rem; color: #f59e0b; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    .card h3 { font-size: 0.85rem; color: #93c5fd; margin: 14px 0 6px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 4px; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+    th { text-align: left; padding: 6px 8px; color: #9ca3af; font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.08); }
+    td { padding: 5px 8px; border-bottom: 1px solid rgba(255,255,255,0.04); color: #d1d5db; }
+    tr:hover td { background: rgba(255,255,255,0.02); }
+
+    code { background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 4px; font-size: 0.78rem; color: #93c5fd; }
+    .method { display: inline-block; font-size: 0.65rem; font-weight: 700; padding: 1px 6px; border-radius: 3px; min-width: 42px; text-align: center; }
+    .get { background: #065f46; color: #6ee7b7; }
+    .post { background: #7c2d12; color: #fdba74; }
+    .put { background: #1e3a5f; color: #93c5fd; }
+    .delete { background: #7f1d1d; color: #fca5a5; }
+    .boss { color: #f59e0b; font-size: 0.7rem; }
+
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+    .stat { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 12px; text-align: center; }
+    .stat .num { font-size: 1.5rem; font-weight: 700; color: #f59e0b; }
+    .stat .label { font-size: 0.75rem; color: #9ca3af; margin-top: 2px; }
+
+    .link-btn { display: inline-block; background: #2b6cb0; color: #fff; text-decoration: none; padding: 8px 16px; border-radius: 8px; font-size: 0.8rem; margin: 4px; transition: background 0.2s; }
+    .link-btn:hover { background: #3b82f6; }
+    .link-btn.amber { background: #d97706; }
+    .link-btn.amber:hover { background: #f59e0b; }
+
+    .nav { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 12px; }
+
+    .tbl-list { column-count: 3; column-gap: 16px; font-size: 0.8rem; }
+    .tbl-list li { padding: 3px 0; break-inside: avoid; }
+
+    .dep-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 16px; font-size: 0.8rem; }
+    .dep-grid .dep { padding: 3px 0; color: #d1d5db; }
+    .dep-grid .dep span { color: #9ca3af; font-size: 0.72rem; }
+
+    ul { padding-left: 18px; list-style: disc; }
+    li { color: #d1d5db; }
+
+    @media (max-width: 640px) {
+      .grid { grid-template-columns: 1fr 1fr; }
+      .tbl-list { column-count: 2; }
+      .dep-grid { grid-template-columns: 1fr; }
+      .header h1 { font-size: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>TCONSIAM ERP — API Reference</h1>
+  <p>Bun + Hono + Drizzle ORM + SQLite | Port 3457</p>
+  <span class="badge">20 API files | 21 UI components | 27 DB tables</span>
+  <div class="nav">
+    <a href="/maw/tconsiam/" class="link-btn">Knowledge Base</a>
+    <a href="http://76.13.221.42:8890/" class="link-btn amber" target="_blank">Open ERP</a>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- Stats -->
+  <div class="card">
+    <h2>Overview</h2>
+    <div class="grid">
+      <div class="stat"><div class="num">20</div><div class="label">Route Modules</div></div>
+      <div class="stat"><div class="num">~105</div><div class="label">Endpoints</div></div>
+      <div class="stat"><div class="num">27</div><div class="label">DB Tables</div></div>
+      <div class="stat"><div class="num">21</div><div class="label">UI Components</div></div>
+    </div>
+  </div>
+
+  <!-- API Endpoints -->
+  <div class="card">
+    <h2>API Endpoints</h2>
+    <p style="font-size:0.75rem; color:#9ca3af; margin-bottom:12px;">
+      Base: <code>/api</code> | Auth: Bearer JWT | <span class="boss">boss</span> = boss-only
+    </p>
+
+    <!-- Auth -->
+    <h3>Auth — <code>/api/auth</code></h3>
+    <table>
+      <tr><td><span class="method post">POST</span></td><td><code>/login</code></td><td>Login, returns JWT token</td></tr>
+      <tr><td><span class="method get">GET</span></td><td><code>/me</code></td><td>Current user info</td></tr>
+      <tr><td><span class="method get">GET</span></td><td><code>/modules</code></td><td>List available modules <span class="boss">boss</span></td></tr>
+      <tr><td><span class="method get">GET</span></td><td><code>/users</code></td><td>List all users <span class="boss">boss</span></td></tr>
+      <tr><td><span class="method post">POST</span></td><td><code>/register</code></td><td>Create new user <span class="boss">boss</span></td></tr>
+      <tr><td><span class="method put">PUT</span></td><td><code>/change-password</code></td><td>Change own password</td></tr>
+      <tr><td><span class="method put">PUT</span></td><td><code>/users/:id</code></td><td>Update user (role, permissions) <span class="boss">boss</span></td></tr>
+    </table>
+
+    <!-- Products -->
+    <h3>Products — <code>/api/products</code></h3>
+    <table>
+      <tr><td><span class="method get">GET</span></td><td><code>/</code></td><td>List all products (with stock)</td></tr>
+      <tr><td><span class="method get">GET</span></td><td><code>/:id</code></td><td>Get product by ID</td></tr>
+      <tr><td><span class="method post">POST</span></td><td><code>/</code></td><td>Create product <span class="boss">boss</span></td></tr>
+      <tr><td><span class="method put">PUT</span></td><td><code>/:id</code></td><td>Update product <span class="boss">boss</span></td></tr>
+    </table>
+
+    <!-- Inventory -->
+    <h3>Inventory — <code>/api/inventory</code></h3>
+    <table>
+      <tr><td><span class="method get">GET</span></td><td><code>/</code></td><td>Stock levels (computed from movements)</td></tr>
+      <tr><td><span class="method post">POST</span></td><td><code>/receive</code></td><td>Receive stock (type: in)</td></tr>
+      <tr><td><span class="method post">POST</span></td><td><code>/issue</code></td><td>Issue stock (type: out)</td></tr>
+      <tr><td><span class="method post">POST</span></td><td><code>/adjust</code></td><td>Adjust stock <span class="boss">boss</span></td></tr>
+      <tr><td><span class="method get">GET</span></td><td><code>/movements</code></td><td>Movement history</td></tr>
+    </table>
+
+    <!-- Customers -->
+    <h3>Customers — <code>/api/customers</code></h3>
+    <table>
+      <tr><td><span class="method get">GET</span></td><td><code>/</code></td><td>List all customers</td></tr>
+      <tr><td><span class="method get">GET</span></td><td><code>/:id</code></td><td>Get customer by ID</td></tr>
+      <tr><td><span class="method post">POST</span></td><td><code>/</code></td><td>Create customer</td></tr>
+      <tr><td><span class="method put">PUT</span></td><td><code>/:id</code></td><td>Update customer</td></tr>
+      <tr><td><span class="method delete">DEL</span></td><td><code>/:id</code></td><td>Delete customer</td></tr>
+    </table>
+
+    <!-- Suppliers -->
+    <h3>Suppliers — <code>/api/suppliers</code></h3>
+    <table>
+      <tr><td><span class="method get">GET</span></td><td><code>/</code></td><td>List all suppliers</td></tr>
+      <tr><td><span class="method get">GET</span></td><td><code>/:id</code></td><td>Get supplier by ID</td></tr>
+      <tr><td><span class="method post">POST</span></td><td><code>/</code></td><td>Create supplier</td></tr>
+      <tr><td><span class="method put">PUT</span></td><td><code>/:id</code></td><td>Update supplier</td></tr>
+      <tr><td><span class="method delete">DEL</span></td><td><code>/:id</code></td><td>Delete supplier</td></tr>
+    </table>
+
+    <!-- Production -->
+    <h3>Production — <code>/api/production</code></h3>
+    <table>
+      <tr><td><span class="method get">GET</span></td><td><code>/bom</code></td><td>List all BOMs</td></tr>
+      <tr><td><span class="method get">GET</span></td><td><code>/bom/:id</code></td><td>Get BOM detail + items</td></tr>
+      <tr><td><span class="method post">POST</span></td><td><code>/bom</code></td><td>Create BOM <span class="boss">boss</span></td></tr>
+      <tr><td><span class="method put">PUT</span></td><td><code>/bom/:id</code></td><td>Update BOM <span class="boss">boss</span></td></tr>
+      <tr><td><span class="method get">GET</span></td><td><code>/orders</code></td><td>List production orders</td></tr>
+      <tr><td><span class="method post">POST</span></td><td><code>/orders</code></td><td>Create production order <span class="boss">boss</span></td></tr>
+      <tr><td><span class="method post">POST</span></td><td><code>/orders/:id/start</code></td><td>Start production</td></tr>
+      <tr><td><span class="method post">POST</span></td><td><code>/orders/:id/log</code></td><td>Log assembly progress</td></tr>
+      <tr><td><span class="method get">GET</span></td><td><code>/orders/:id/logs</code></td><td>Get production logs</td></tr>
+    </table>
+
+    <!-- QC -->
+    <h3>QC + Claims — <code>/api/qc</code></h3>
+    <table>
+      <tr><td><span class="method get">GET</span></td><td><code>/inspections</code></td><td>List inspections</td></tr>
+      <tr><td><span class="method get">GET</span></td><td><code>/inspections/:id</code></td><td>Get inspection + defects</td></tr>
+      <tr><td><span class="method post">POST</span></td><td><code>/inspections</code></td><td>Create inspection</td></tr>
+      <tr><td><span class="method put">PUT</span></td><td><code>/inspections/:id</code></td><td>Update inspection</td></tr>
+      <tr><td><span class="method post">POST</span></td><td><code>/inspections/:id/defects</code></td><td>Add defect to inspection</td></tr>
+      <tr><td><span class="method post">POST</span></td><td><code>/defects/:id/photos</code></td><td>Upload defect photos</td></tr>
+      <tr><td><span class="method delete">DEL</span></td><td><code>/defects/:id</code></td><td>Delete defect</td></tr>
+      <tr><td><span class="method post">POST</span></td><td><code>/inspections/:id/claim</code></td><td>Generate claim letter <span class="boss">boss</span></td></tr>
+      <tr><td><span class="method get">GET</span></td><td><code>/claims</code></td><td>List claims</td></tr>
+      <tr><td><span class="method get">GET</span></td><td><code>/claims/:id</code></td><td>Get claim detail</td></tr>
+      <tr><td><span class="method put">PUT</span></td><td><code>/claims/:id</code></td><td>Update claim <span class="boss">boss</span></td></tr>
+      <tr><td><span class="method post">POST</span></td><td><code>/claims/:id/send</code></td><td>Send claim email <span class="boss">boss</span></td></tr>
+      <tr><td><span class="method get">GET</span></td><td><code>/mail-status</code></td><td>Check mailer config <span class="boss">boss</span></td></tr>
+    </table>
+
+    <!-- Consumables -->
+    <h3>Consumables — <code>/api/consumables</code></h3>
+    <table>
+      <tr><td><span class="method get">GET</span></td><td><code>/</code></td><td>List consumable items</td></tr>
+      <tr><td><span class="method post">POST</span></td><td><code>/</code></td><td>Create consumable</td></tr>
+      <tr><td><span class="method put">PUT</span></td><td><code>/:id</code></td><td>Update consumable</td></tr>
+      <tr><td><span class="method get">GET</span></td><td><code>/purchases</code></td><td>List purchases</td></tr>
+      <tr><td><span class="method get">GET</span></td><td><code>/purchases/:id</code></td><td>Get purchase detail</td></tr>
+      <tr><td><span class="method post">POST</span></td><td><code>/purchases</code></td><td>Record purchase</td></tr>
+      <tr><td><span class="method post">POST</span></td><td><code>/purchases/:id/receipt</code></td><td>Upload receipt photo</td></tr>
+      <tr><td><span class="method get">GET</span></td><td><code>/summary</code></td><td>Spending summary</td></tr>
+    </table>
+
+    <!-- Dashboard -->
+    <h3>Dashboard — <code>/api/dashboard</code></h3>
+    <table>
+      <tr><td><span class="method get">GET</span></td><td><code>/summary</code></td><td>KPI summary (sales, stock, customers)</td></tr>
+      <tr><td><span class="method get">GET</span></td><td><code>/low-stock</code></td><td>Products below min stock</td></tr>
+      <tr><td><span class="method get">GET</span></td><td><code>/charts</code></td><td>Chart data (category stock, etc.)</td></tr>
+      <tr><td><span class="method get">GET</span></td><td><code>/recent-movements</code></td><td>Recent inventory movements</td></tr>
+    </table>
+
+    <!-- Orders -->
+    <h3>Orders — <code>/api/orders</code></h3>
+    <table>
+      <tr><td><span class="method get">GET</span></td><td><code>/</code></td><td>List orders</td></tr>
+      <tr><td><span class="method get">GET</span></td><td><code>/:id</code></td><td>Get order + items</td></tr>
+      <tr><td><span class="method post">POST</span></td><td><code>/</code></td><td>Create order <span class="boss">boss</span></td></tr>
+      <tr><td><span class="method put">PUT</span></td><td><code>/:id</code></td><td>Update order <span class="boss">boss</span></td></tr>
+      <tr><td><span class="method put">PUT</span></td><td><code>/:id/status</code></td><td>Change order status <span class="boss">boss</span></td></tr>
+      <tr><td><span class="method delete">DEL</span></td><td><code>/:id</code></td><td>Delete order <span class="boss">boss</span></td></tr>
+    </table>
+
+    <!-- Reports -->
+    <h3>Reports — <code>/api/reports</code></h3>
+    <table>
+      <tr><td><span class="method get">GET</span></td><td><code>/sales-summary</code></td><td>Sales totals by period</td></tr>
+      <tr><td><span class="method get">GET</span></td><td><code>/purchase-summary</code></td><td>Purchase totals by period</td></tr>
+      <tr><td><span class="method get">GET</span></td><td><code>/stock</code></td><td>Full stock report</td></tr>
+      <tr><td><span class="method get">GET</span></td><td><code>/cost-analysis</code></td><td>Cost breakdown analysis</td></tr>
+      <tr><td><span class="method get">GET</span></td><td><code>/profit</code></td><td>Gross profit report</td></tr>
+      <tr><td><span class="method get">GET</span></td><td><code>/product-profit</code></td><td>Per-product profit + landed cost</td></tr>
+      <tr><td><span class="method get">GET</span></td><td><code>/monthly-pdf</code></td><td>Monthly PDF report <span class="boss">boss</span></td></tr>
+    </table>
+
+    <!-- Quotations -->
+    <h3>Quotations — <code>/api/quotations</code></h3>
+    <table>
+      <tr><td><span class="method get">GET</span></td><td><code>/</code></td><td>List quotations</td></tr>
+      <tr><td><span class="method get">GET</span></td><td><code>/:id</code></td><td>Get quotation + items</td></tr>
+      <tr><td><span class="method post">POST</span></td><td><code>/</code></td><td>Create quotation <span class="boss">boss</span></td></tr>
+      <tr><td><span class="method put">PUT</span></td><td><code>/:id</code></td><td>Update quotation <span class="boss">boss</span></td></tr>
+      <tr><td><span class="method post">POST</span></td><td><code>/:id/approve</code></td><td>Approve and convert to order <span class="boss">boss</span></td></tr>
+      <tr><td><span class="method get">GET</span></td><td><code>/:id/pdf</code></td><td>Download PDF</td></tr>
+      <tr><td><span class="method delete">DEL</span></td><td><code>/:id</code></td><td>Delete quotation <span class="boss">boss</span></td></tr>
+    </table>
+
+    <!-- Invoices -->
+    <h3>Invoices — <code>/api/invoices</code></h3>
+    <table>
+      <tr><td><span class="method get">GET</span></td><td><code>/</code></td><td>List invoices</td></tr>
+      <tr><td><span class="method get">GET</span></td><td><code>/overdue</code></td><td>Overdue invoices</td></tr>
+      <tr><td><span class="method get">GET</span></td><td><code>/:id</code></td><td>Get invoice + items</td></tr>
+      <tr><td><span class="method post">POST</span></td><td><code>/</code></td><td>Create invoice <span class="boss">boss</span></td></tr>
+      <tr><td><span class="method post">POST</span></td><td><code>/from-order/:orderId</code></td><td>Create from order <span class="boss">boss</span></td></tr>
+      <tr><td><span class="method put">PUT</span></td><td><code>/:id</code></td><td>Update invoice <span class="boss">boss</span></td></tr>
+      <tr><td><span class="method get">GET</span></td><td><code>/:id/pdf</code></td><td>Download PDF</td></tr>
+      <tr><td><span class="method post">POST</span></td><td><code>/:id/email</code></td><td>Email invoice <span class="boss">boss</span></td></tr>
+      <tr><td><span class="method delete">DEL</span></td><td><code>/:id</code></td><td>Delete invoice <span class="boss">boss</span></td></tr>
+    </table>
+
+    <!-- Payments -->
+    <h3>Payments — <code>/api/payments</code></h3>
+    <table>
+      <tr><td><span class="method get">GET</span></td><td><code>/</code></td><td>List payments</td></tr>
+      <tr><td><span class="method get">GET</span></td><td><code>/summary</code></td><td>Payment summary totals</td></tr>
+      <tr><td><span class="method get">GET</span></td><td><code>/:id</code></td><td>Get payment detail</td></tr>
+      <tr><td><span class="method post">POST</span></td><td><code>/</code></td><td>Record payment <span class="boss">boss</span></td></tr>
+      <tr><td><span class="method delete">DEL</span></td><td><code>/:id</code></td><td>Delete payment <span class="boss">boss</span></td></tr>
+    </table>
+
+    <!-- Shipments -->
+    <h3>Shipments — <code>/api/shipments</code></h3>
+    <table>
+      <tr><td><span class="method get">GET</span></td><td><code>/</code></td><td>List shipments</td></tr>
+      <tr><td><span class="method get">GET</span></td><td><code>/:id</code></td><td>Get shipment + items</td></tr>
+      <tr><td><span class="method post">POST</span></td><td><code>/</code></td><td>Create shipment <span class="boss">boss</span></td></tr>
+      <tr><td><span class="method put">PUT</span></td><td><code>/:id</code></td><td>Update shipment <span class="boss">boss</span></td></tr>
+      <tr><td><span class="method post">POST</span></td><td><code>/:id/complete</code></td><td>Complete + update landed costs <span class="boss">boss</span></td></tr>
+      <tr><td><span class="method delete">DEL</span></td><td><code>/:id</code></td><td>Delete shipment <span class="boss">boss</span></td></tr>
+    </table>
+
+    <!-- Notifications -->
+    <h3>Notifications — <code>/api/notifications</code></h3>
+    <table>
+      <tr><td><span class="method get">GET</span></td><td><code>/</code></td><td>List user notifications</td></tr>
+      <tr><td><span class="method put">PUT</span></td><td><code>/read-all</code></td><td>Mark all as read</td></tr>
+      <tr><td><span class="method put">PUT</span></td><td><code>/:id/read</code></td><td>Mark one as read</td></tr>
+      <tr><td><span class="method get">GET</span></td><td><code>/channels</code></td><td>Get notification channels config</td></tr>
+      <tr><td><span class="method post">POST</span></td><td><code>/check</code></td><td>Check and create alerts</td></tr>
+      <tr><td><span class="method post">POST</span></td><td><code>/run-alerts</code></td><td>Run daily alerts now <span class="boss">boss</span></td></tr>
+      <tr><td><span class="method delete">DEL</span></td><td><code>/:id</code></td><td>Delete notification</td></tr>
+    </table>
+
+    <!-- Audit -->
+    <h3>Audit Trail — <code>/api/audit</code></h3>
+    <table>
+      <tr><td><span class="method get">GET</span></td><td><code>/</code></td><td>List audit logs (paginated)</td></tr>
+      <tr><td><span class="method get">GET</span></td><td><code>/record/:table/:id</code></td><td>Audit history for specific record</td></tr>
+    </table>
+
+    <!-- Backup -->
+    <h3>Backup — <code>/api/backup</code></h3>
+    <table>
+      <tr><td><span class="method get">GET</span></td><td><code>/list</code></td><td>List backups</td></tr>
+      <tr><td><span class="method post">POST</span></td><td><code>/create</code></td><td>Create backup now</td></tr>
+      <tr><td><span class="method get">GET</span></td><td><code>/download</code></td><td>Download latest backup</td></tr>
+    </table>
+
+    <!-- Export -->
+    <h3>Export/Import — <code>/api/export</code></h3>
+    <table>
+      <tr><td><span class="method get">GET</span></td><td><code>/products</code></td><td>Export products to Excel</td></tr>
+      <tr><td><span class="method get">GET</span></td><td><code>/customers</code></td><td>Export customers to Excel</td></tr>
+      <tr><td><span class="method get">GET</span></td><td><code>/orders</code></td><td>Export orders to Excel</td></tr>
+      <tr><td><span class="method post">POST</span></td><td><code>/import/products</code></td><td>Import products from Excel</td></tr>
+    </table>
+
+    <!-- Search -->
+    <h3>Search — <code>/api/search</code></h3>
+    <table>
+      <tr><td><span class="method get">GET</span></td><td><code>/?q=term</code></td><td>Cross-module global search</td></tr>
+    </table>
+
+    <!-- Health -->
+    <h3>System</h3>
+    <table>
+      <tr><td><span class="method get">GET</span></td><td><code>/api/health</code></td><td>Health check (no auth)</td></tr>
+    </table>
+  </div>
+
+  <!-- Database Tables -->
+  <div class="card">
+    <h2>Database Tables (27)</h2>
+    <p style="font-size:0.75rem; color:#9ca3af; margin-bottom:12px;">SQLite + Drizzle ORM | WAL mode | Path: <code>~/.config/tconsiam/db/tconsiam.db</code></p>
+    <table>
+      <thead><tr><th>Table</th><th>Module</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>users</code></td><td>Auth</td><td>System users, roles, permissions (JSON)</td></tr>
+        <tr><td><code>products</code></td><td>Products</td><td>Solar light components (SKU, price, min stock)</td></tr>
+        <tr><td><code>customers</code></td><td>Customers</td><td>Thai business buyers (tax ID, terms)</td></tr>
+        <tr><td><code>suppliers</code></td><td>Suppliers</td><td>Chinese manufacturers (lead time)</td></tr>
+        <tr><td><code>inventory_movements</code></td><td>Inventory</td><td>Every stock change (in/out/adjust)</td></tr>
+        <tr><td><code>orders</code></td><td>Orders</td><td>Sales + purchase orders</td></tr>
+        <tr><td><code>order_items</code></td><td>Orders</td><td>Line items per order</td></tr>
+        <tr><td><code>bom</code></td><td>Production</td><td>Bill of Materials definitions</td></tr>
+        <tr><td><code>bom_items</code></td><td>Production</td><td>BOM component list</td></tr>
+        <tr><td><code>production_orders</code></td><td>Production</td><td>Assembly work orders</td></tr>
+        <tr><td><code>production_logs</code></td><td>Production</td><td>Daily assembly progress</td></tr>
+        <tr><td><code>qc_inspections</code></td><td>QC</td><td>Container unload inspections</td></tr>
+        <tr><td><code>qc_defects</code></td><td>QC</td><td>Damaged items + photos</td></tr>
+        <tr><td><code>claim_forms</code></td><td>QC</td><td>Supplier claim letters (English)</td></tr>
+        <tr><td><code>consumables</code></td><td>Consumables</td><td>Site materials catalog</td></tr>
+        <tr><td><code>consumable_purchases</code></td><td>Consumables</td><td>Purchase records</td></tr>
+        <tr><td><code>consumable_purchase_items</code></td><td>Consumables</td><td>Purchase line items</td></tr>
+        <tr><td><code>quotations</code></td><td>Quotations</td><td>Price quotes (discount, VAT)</td></tr>
+        <tr><td><code>quotation_items</code></td><td>Quotations</td><td>Quote line items</td></tr>
+        <tr><td><code>invoices</code></td><td>Invoices</td><td>Bills (subtotal, VAT, grand total)</td></tr>
+        <tr><td><code>invoice_items</code></td><td>Invoices</td><td>Invoice line items</td></tr>
+        <tr><td><code>payments</code></td><td>Payments</td><td>Receive/pay records</td></tr>
+        <tr><td><code>shipments</code></td><td>Shipments</td><td>Container imports (costs, exchange rate)</td></tr>
+        <tr><td><code>shipment_items</code></td><td>Shipments</td><td>Products per shipment (landed cost)</td></tr>
+        <tr><td><code>notifications</code></td><td>Notifications</td><td>System alerts (low stock, overdue)</td></tr>
+        <tr><td><code>audit_logs</code></td><td>Audit</td><td>All mutation tracking</td></tr>
+        <tr><td><code>_migrations</code></td><td>System</td><td>Migration version tracker</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Auth Middleware -->
+  <div class="card">
+    <h2>Auth Middleware Reference</h2>
+    <p style="font-size:0.75rem; color:#9ca3af; margin-bottom:12px;">Source: <code>api/src/lib/auth.ts</code> | JWT + bcrypt (Bun.password) | Token expires: 7 days</p>
+    <table>
+      <thead><tr><th>Export</th><th>Type</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>hashPassword(password)</code></td><td>async function</td><td>bcrypt hash via Bun.password (cost 10)</td></tr>
+        <tr><td><code>verifyPassword(password, hash)</code></td><td>async function</td><td>Verify password against bcrypt hash</td></tr>
+        <tr><td><code>signToken(payload)</code></td><td>function</td><td>Create JWT (userId, username, role) — 7d expiry</td></tr>
+        <tr><td><code>verifyToken(token)</code></td><td>function</td><td>Decode and verify JWT, returns JwtPayload</td></tr>
+        <tr><td><code>requireAuth</code></td><td>middleware</td><td>Require valid Bearer token. Sets <code>c.set("user", payload)</code></td></tr>
+        <tr><td><code>requireBoss</code></td><td>middleware</td><td>Require boss role (use after requireAuth)</td></tr>
+        <tr><td><code>requirePermission(module)</code></td><td>middleware factory</td><td>Require module in user's permissions JSON. Boss always passes.</td></tr>
+        <tr><td><code>JwtPayload</code></td><td>interface</td><td><code>{ userId: number, username: string, role: string }</code></td></tr>
+      </tbody>
+    </table>
+    <h3>Roles</h3>
+    <table>
+      <tr><td style="width:25%"><code>boss</code></td><td>Full access to all modules and admin features</td></tr>
+      <tr><td><code>warehouse</code></td><td>Limited access controlled by <code>users.permissions</code> JSON array</td></tr>
+    </table>
+  </div>
+
+  <!-- Dependencies -->
+  <div class="card">
+    <h2>Dependencies</h2>
+    <h3>Runtime</h3>
+    <div class="dep-grid">
+      <div class="dep"><code>hono</code> <span>^4.12.5 — Web framework</span></div>
+      <div class="dep"><code>drizzle-orm</code> <span>^0.45.2 — Type-safe ORM</span></div>
+      <div class="dep"><code>better-sqlite3</code> <span>^11.8.1 — SQLite driver</span></div>
+      <div class="dep"><code>jsonwebtoken</code> <span>^9.0.2 — JWT auth</span></div>
+      <div class="dep"><code>zod</code> <span>^4.3.6 — Schema validation</span></div>
+      <div class="dep"><code>pdfkit</code> <span>^0.18.0 — PDF generation</span></div>
+      <div class="dep"><code>qrcode</code> <span>^1.5.4 — QR code generation</span></div>
+      <div class="dep"><code>xlsx</code> <span>^0.18.5 — Excel import/export</span></div>
+      <div class="dep"><code>nodemailer</code> <span>^8.0.5 — Email sending</span></div>
+    </div>
+    <h3>Dev Dependencies</h3>
+    <div class="dep-grid">
+      <div class="dep"><code>@types/bun</code> <span>^1.3.11</span></div>
+      <div class="dep"><code>@types/better-sqlite3</code> <span>^7.6.13</span></div>
+      <div class="dep"><code>@types/jsonwebtoken</code> <span>^9.0.9</span></div>
+      <div class="dep"><code>@types/qrcode</code> <span>^1.5.6</span></div>
+    </div>
+  </div>
+
+</div>
+
+<div style="text-align:center; padding: 20px; color: #4b5563; font-size: 0.7rem;">
+  TCONSIAM ERP API Reference — Generated 2026-04-08
+</div>
+
+</body>
+</html>

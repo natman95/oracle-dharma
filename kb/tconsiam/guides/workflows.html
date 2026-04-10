@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCONSIAM ERP — Development Workflows Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #0a0a12;
+            color: #e5e7eb;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid #1f1f2e;
+        }
+
+        .header-nav {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .header-nav a {
+            color: #93c5fd;
+            text-decoration: none;
+            font-size: 0.9rem;
+            padding: 0.5rem 1rem;
+            border: 1px solid #1f1f2e;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .header-nav a:hover {
+            background: #12121a;
+            border-color: #f59e0b;
+            color: #f59e0b;
+        }
+
+        h1 {
+            color: #f59e0b;
+            margin-bottom: 0.5rem;
+            font-size: 2.5rem;
+        }
+
+        .subtitle {
+            color: #9ca3af;
+            font-size: 1.1rem;
+        }
+
+        h2 {
+            color: #f59e0b;
+            margin-top: 2.5rem;
+            margin-bottom: 1.5rem;
+            font-size: 1.75rem;
+            border-left: 4px solid #f59e0b;
+            padding-left: 1rem;
+        }
+
+        h3 {
+            color: #93c5fd;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+        }
+
+        .card {
+            background: #12121a;
+            border: 1px solid #1f1f2e;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.2s;
+        }
+
+        .card:hover {
+            border-color: #f59e0b;
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.1);
+        }
+
+        pre {
+            background: #0a0a12;
+            border: 1px solid #1f1f2e;
+            border-radius: 6px;
+            padding: 1rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        code {
+            color: #93c5fd;
+            background: transparent;
+            padding: 0;
+        }
+
+        pre code {
+            color: #93c5fd;
+        }
+
+        .step-list {
+            list-style: none;
+            counter-reset: step-counter;
+            padding-left: 0;
+        }
+
+        .step-list li {
+            counter-increment: step-counter;
+            margin-bottom: 1.25rem;
+            padding-left: 2.5rem;
+            position: relative;
+        }
+
+        .step-list li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: #f59e0b;
+            color: #0a0a12;
+            width: 1.75rem;
+            height: 1.75rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            border: 1px solid #1f1f2e;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th {
+            background: #1f1f2e;
+            color: #f59e0b;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 1rem;
+            border-top: 1px solid #1f1f2e;
+            color: #d1d5db;
+        }
+
+        tr:hover {
+            background: #0a0a12;
+        }
+
+        .alert {
+            background: #1f1f2e;
+            border-left: 4px solid #ef4444;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+        }
+
+        .alert strong {
+            color: #fca5a5;
+        }
+
+        .success {
+            border-left-color: #10b981;
+        }
+
+        .success strong {
+            color: #a7f3d0;
+        }
+
+        .section-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .key-pattern {
+            background: #12121a;
+            border: 1px solid #1f1f2e;
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+        }
+
+        .key-pattern-title {
+            color: #f59e0b;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .key-pattern-desc {
+            color: #d1d5db;
+            font-size: 0.9rem;
+        }
+
+        .pitfall {
+            background: #1a0f0a;
+            border-left: 4px solid #ef4444;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 4px;
+        }
+
+        .pitfall-title {
+            color: #fca5a5;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        footer {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid #1f1f2e;
+            text-align: center;
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #1f1f2e;
+            color: #93c5fd;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-right: 0.5rem;
+        }
+
+        .badge-prod {
+            background: #1a3a1a;
+            color: #10b981;
+        }
+
+        .badge-dev {
+            background: #1a2a3a;
+            color: #60a5fa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-nav">
+                <a href="/maw/tconsiam/">← Back to TCONSIAM</a>
+                <a href="/maw/tconsiam/">KB Home</a>
+            </div>
+            <h1>TCONSIAM ERP</h1>
+            <p class="subtitle">Development Workflows Guide</p>
+        </header>
+
+        <main>
+            <!-- Section 1: Development Setup -->
+            <section>
+                <h2>1. Development Setup</h2>
+                <p>Start the development environment with hot-reload enabled on both API and UI services.</p>
+
+                <div class="card">
+                    <h3>Quick Start</h3>
+                    <pre><code>cd /root/projects/tcon
+cd api && bun run dev          # API on :3457
+cd ui && bunx vite             # UI on :5173 (proxies /api)</code></pre>
+
+                    <div class="alert success">
+                        <strong>Note:</strong> The UI automatically proxies /api requests to localhost:3457. Open your browser to http://localhost:5173
+                    </div>
+
+                    <h3 style="margin-top: 1.5rem;">What's Running</h3>
+                    <ul style="margin-left: 2rem; margin-top: 1rem;">
+                        <li><span class="badge badge-dev">API</span> Bun server on port 3457 — REST endpoints, auth, database</li>
+                        <li><span class="badge badge-dev">UI</span> Vite dev server on port 5173 — React app with hot reload</li>
+                        <li><span class="badge badge-dev">Database</span> SQLite at ~/.config/tconsiam/db/tconsiam.db</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Section 2: Deploy to Production -->
+            <section>
+                <h2>2. Deploy to Production</h2>
+                <p>Follow this process to safely deploy changes to the production server (76.13.221.42:8890).</p>
+
+                <div class="card">
+                    <h3>Deployment Command</h3>
+                    <pre><code>cd /root/projects/tcon
+./deploy.sh</code></pre>
+
+                    <h3 style="margin-top: 1.5rem;">What the script does:</h3>
+                    <ol class="step-list">
+                        <li>Build the UI: <code>bunx vite build</code></li>
+                        <li>Copy dist/ → /opt/tconsiam-dashboard/ (full replacement)</li>
+                        <li>Restart tconsiam-api.service</li>
+                        <li>Verify health checks</li>
+                    </ol>
+
+                    <div class="alert">
+                        <strong>Important:</strong> Always build the UI first before deploying. The deployment assumes a fresh dist/ folder.
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Post-Deployment Checks</h3>
+                    <pre><code># View API logs
+journalctl -u tconsiam-api -f
+
+# Test health endpoint
+curl https://tconsiam.tcon-siam.com/api/health
+
+# Check database sync
+ssh root@76.13.221.42 sqlite3 ~/.config/tconsiam/db/tconsiam.db ".tables"</code></pre>
+                </div>
+            </section>
+
+            <!-- Section 3: Adding a New Module -->
+            <section>
+                <h2>3. Adding a New Module (Step by Step)</h2>
+                <p>Modules are self-contained features that manage a specific domain (Products, Inventory, Invoices, etc).</p>
+
+                <ol class="step-list" style="margin-bottom: 2rem;">
+                    <li>
+                        <strong>Define database schema</strong>
+                        <p style="margin-top: 0.5rem;">Edit <code>api/src/db/schema.ts</code> — add your tables with proper relationships and constraints.</p>
+                    </li>
+                    <li>
+                        <strong>Create migration</strong>
+                        <p style="margin-top: 0.5rem;">Add SQL to <code>api/src/db/migrate.ts</code> with the next version number (e.g., v018 if latest is v017).</p>
+                    </li>
+                    <li>
+                        <strong>Create API route file</strong>
+                        <p style="margin-top: 0.5rem;">Create <code>api/src/api/module.ts</code> with endpoints (GET, POST, PUT, DELETE). Always wrap responses in a named key: <code>{ products: [...] }</code></p>
+                    </li>
+                    <li>
+                        <strong>Mount in API index</strong>
+                        <p style="margin-top: 0.5rem;">Import and register in <code>api/src/index.ts</code> — add to Hono app with <code>app.route('/api/module', moduleRouter)</code></p>
+                    </li>
+                    <li>
+                        <strong>Create UI component</strong>
+                        <p style="margin-top: 0.5rem;">Create <code>ui/src/components/ModuleView.tsx</code> — React component with fetch, state management, and UI.</p>
+                    </li>
+                    <li>
+                        <strong>Register in App routing</strong>
+                        <p style="margin-top: 0.5rem;">Add to <code>ui/src/App.tsx</code> views array and <code>ui/src/components/Layout.tsx</code> NAV_ITEMS for sidebar navigation.</p>
+                    </li>
+                </ol>
+
+                <div class="alert success">
+                    <strong>Pro tip:</strong> Start with a simple module (e.g., Categories) to learn the pattern, then expand to complex modules with relationships.
+                </div>
+            </section>
+
+            <!-- Section 4: Key Patterns -->
+            <section>
+                <h2>4. Key Patterns</h2>
+
+                <div class="key-pattern">
+                    <div class="key-pattern-title">API Response Format</div>
+                    <div class="key-pattern-desc">Always wrap results in a named key</div>
+                    <pre><code>// Correct
+{ products: [{id: 1, name: "Solar Panel"}, ...] }
+
+// Wrong — bare arrays cause parsing issues
+[{id: 1, name: "Solar Panel"}, ...]</code></pre>
+                </div>
+
+                <div class="key-pattern">
+                    <div class="key-pattern-title">Authentication</div>
+                    <div class="key-pattern-desc">JWT Bearer header with role-based access control</div>
+                    <pre><code>// API request
+fetch('/api/products', {
+  headers: { 'Authorization': `Bearer ${token}` }
+})
+
+// Roles: boss (full access) | warehouse (limited by permissions)</code></pre>
+                </div>
+
+                <div class="key-pattern">
+                    <div class="key-pattern-title">Audit Logging</div>
+                    <div class="key-pattern-desc">Track all changes for compliance and debugging</div>
+                    <pre><code>logAudit({
+  action: 'UPDATE',
+  tableName: 'products',
+  recordId: 42,
+  oldValues: { name: 'Panel A', price: 100 },
+  newValues: { name: 'Panel B', price: 120 },
+  userId: 'user123',
+  userName: 'John Doe'
+})</code></pre>
+                </div>
+
+                <div class="key-pattern">
+                    <div class="key-pattern-title">Stock Calculation</div>
+                    <div class="key-pattern-desc">Stock is computed in real-time from inventory movements</div>
+                    <pre><code>SELECT product_id, SUM(quantity) as current_stock
+FROM inventory_movements
+GROUP BY product_id
+
+// No separate stock table — movements are the source of truth</code></pre>
+                </div>
+
+                <div class="key-pattern">
+                    <div class="key-pattern-title">PDF Generation</div>
+                    <div class="key-pattern-desc">PDFKit with Sarabun font, use lineBreak: false</div>
+                    <pre><code>const doc = new PDFDocument();
+doc.font('/path/to/Sarabun-Regular.ttf');
+doc.fontSize(12).text('Invoice', { lineBreak: false });
+
+// Reset y before footer to avoid overlap
+doc.y = doc.page.height - 80;
+doc.text('Page footer', { align: 'center' });</code></pre>
+                </div>
+
+                <div class="key-pattern">
+                    <div class="key-pattern-title">Date Format</div>
+                    <div class="key-pattern-desc">Store as ISO 8601 in SQLite, display in Thai locale on UI</div>
+                    <pre><code>// Storage
+INSERT INTO invoices (date) VALUES ('2026-04-09T14:30:00Z')
+
+// Display (React)
+new Date('2026-04-09T14:30:00Z')
+  .toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' })</code></pre>
+                </div>
+            </section>
+
+            <!-- Section 5: Common Pitfalls -->
+            <section>
+                <h2>5. Common Pitfalls</h2>
+
+                <div class="pitfall">
+                    <div class="pitfall-title">Wrong Repository Path</div>
+                    <p style="margin-bottom: 0.5rem;">Repo is at <code>/root/projects/tcon</code> NOT <code>tecon</code> (missing the 's').</p>
+                    <pre><code># Right
+cd /root/projects/tcon
+
+# Wrong
+cd /root/projects/tecon  # Does not exist</code></pre>
+                </div>
+
+                <div class="pitfall">
+                    <div class="pitfall-title">PDFKit Footer Overlap</div>
+                    <p style="margin-bottom: 0.5rem;">Always reset <code>doc.y</code> before writing the footer to prevent text overlap.</p>
+                    <pre><code>// Without this, footer overwrites content above
+doc.y = doc.page.height - 80;
+doc.text('Footer text', { align: 'center' });</code></pre>
+                </div>
+
+                <div class="pitfall">
+                    <div class="pitfall-title">Thai Characters in PDF</div>
+                    <p style="margin-bottom: 0.5rem;">PDFKit garbles Thai text. Keep labels in English, use Thai only in data fields where unavoidable.</p>
+                    <pre><code>// Good
+doc.text('Invoice Number: INV-2026-001');
+doc.text('วันที่: 9 เมษายน 2026');
+
+// Bad — Thai labels in PDFKit look corrupted
+doc.text('เลขที่ใบแจ้งหนี้: INV-2026-001');</code></pre>
+                </div>
+
+                <div class="pitfall">
+                    <div class="pitfall-title">API Field Name Mismatch</div>
+                    <p style="margin-bottom: 0.5rem;">API returns <code>totalAmount</code> and <code>vat</code>, but UI might expect <code>subtotal</code> and <code>vatRate</code>. Check the schema first.</p>
+                    <pre><code>// Verify in api/src/db/schema.ts
+export const invoices = sqliteTable('invoices', {
+  totalAmount: real().notNull(),
+  vat: real().default(0)
+});</code></pre>
+                </div>
+
+                <div class="pitfall">
+                    <div class="pitfall-title">Deploy Sequence Error</div>
+                    <p style="margin-bottom: 0.5rem;">Must build UI first, then copy dist/. Deploying without a fresh build leaves old files in production.</p>
+                    <pre><code># Right
+bunx vite build
+cp -r dist/ /opt/tconsiam-dashboard/
+systemctl restart tconsiam-api.service
+
+# Wrong — mixing old and new files
+cp /root/projects/tcon/dist/ /opt/tconsiam-dashboard/
+# (if dist/ is stale, production serves old code)</code></pre>
+                </div>
+
+                <div class="pitfall">
+                    <div class="pitfall-title">Port Confusion</div>
+                    <p style="margin-bottom: 0.5rem;">Production uses port <span class="badge badge-prod">8890</span> via Nginx. Direct API calls are port <span class="badge badge-dev">3457</span>. Dev is <span class="badge badge-dev">5173</span>.</p>
+                    <pre><code>Dev:   http://localhost:5173 → proxies /api to :3457
+Prod:  https://tconsiam.tcon-siam.com:8890 → Nginx
+API:   localhost:3457 (direct, dev/local only)</code></pre>
+                </div>
+            </section>
+
+            <!-- Section 6: Infrastructure -->
+            <section>
+                <h2>6. Infrastructure</h2>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Component</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>VPS</strong></td>
+                            <td>76.13.221.42 — Primary production server</td>
+                        </tr>
+                        <tr>
+                            <td><strong>API Server</strong></td>
+                            <td>Bun on port 3457, managed by systemd (tconsiam-api.service)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Reverse Proxy</strong></td>
+                            <td>Nginx on port 8890 — serves static files from /opt/tconsiam-dashboard/, proxies /api/ → localhost:3457</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Database</strong></td>
+                            <td>SQLite at ~/.config/tconsiam/db/tconsiam.db with WAL mode enabled</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Backups</strong></td>
+                            <td>Cron job at 02:00 UTC daily, keeps 7 days at /opt/tconsiam-backups/</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Logs</strong></td>
+                            <td><code>journalctl -u tconsiam-api -f</code> — real-time API logs</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="card" style="margin-top: 1.5rem;">
+                    <h3>Common Commands</h3>
+                    <pre><code># SSH into production
+ssh root@76.13.221.42
+
+# View logs
+journalctl -u tconsiam-api -f
+
+# Restart API
+systemctl restart tconsiam-api.service
+
+# Check database
+sqlite3 ~/.config/tconsiam/db/tconsiam.db ".schema"
+
+# View backup status
+ls -lah /opt/tconsiam-backups/</code></pre>
+                </div>
+            </section>
+
+            <!-- Section 7: UI Architecture -->
+            <section>
+                <h2>7. UI Architecture</h2>
+
+                <div class="card">
+                    <h3>Tech Stack</h3>
+                    <ul style="margin-left: 2rem; margin-top: 1rem;">
+                        <li><strong>React 19</strong> + Vite — Modern component framework with hot reload</li>
+                        <li><strong>Tailwind CSS 4</strong> — Utility-first styling with design tokens</li>
+                        <li><strong>Zustand</strong> — Lightweight state management for auth and app state</li>
+                        <li><strong>lucide-react</strong> — Icon library (~200 icons)</li>
+                        <li><strong>Routing</strong> — Hash-based (#/) for simple SPA navigation</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>Key Concepts</h3>
+
+                    <div style="margin-top: 1.5rem;">
+                        <strong style="color: #93c5fd;">apiFetch() wrapper</strong>
+                        <p style="color: #d1d5db; margin-top: 0.5rem;">Automatically adds JWT Bearer header to all requests. No manual auth handling needed.</p>
+                        <pre><code>// Automatically includes Authorization header
+const data = await apiFetch('/api/products');</code></pre>
+                    </div>
+
+                    <div style="margin-top: 1.5rem;">
+                        <strong style="color: #93c5fd;">Shared Components</strong>
+                        <p style="color: #d1d5db; margin-top: 0.5rem;">7 reusable UI components: Button, Modal, Field, Badge, Spinner, PageHeader, ResponsiveTable</p>
+                    </div>
+
+                    <div style="margin-top: 1.5rem;">
+                        <strong style="color: #93c5fd;">CSS Design Tokens</strong>
+                        <p style="color: #d1d5db; margin-top: 0.5rem;">Consistent theming via Tailwind config — dark background, amber accents, blue code highlights</p>
+                    </div>
+
+                    <div style="margin-top: 1.5rem;">
+                        <strong style="color: #93c5fd;">Mobile Optimization</strong>
+                        <p style="color: #d1d5db; margin-top: 0.5rem;">14px baseline font, 44px touch targets, responsive grid layouts, tested on iOS 14+ and Android 8+</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Project Structure</h3>
+                    <pre><code>ui/src/
+├── App.tsx                    # Routes and main layout
+├── components/
+│   ├── Layout.tsx            # Sidebar + header
+│   ├── Button.tsx            # Reusable button
+│   ├── Modal.tsx             # Dialog / confirmation
+│   ├── Field.tsx             # Form input
+│   ├── Badge.tsx             # Status badge
+│   ├── Spinner.tsx           # Loading indicator
+│   ├── PageHeader.tsx        # Page title + actions
+│   ├── ResponsiveTable.tsx   # Mobile-friendly table
+│   └── ModuleView.tsx        # Feature components
+├── hooks/
+│   ├── useAuth.ts            # Auth state (Zustand)
+│   └── useFetch.ts           # API calls
+├── utils/
+│   ├── apiFetch.ts           # JWT wrapper
+│   └── formatters.ts         # Date, currency, etc
+└── styles/
+    └── index.css             # Tailwind + tokens</code></pre>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>TCONSIAM ERP Development Workflows Guide — Last updated 2026-04-09</p>
+            <p style="margin-top: 0.5rem;">Built for Thai Import-Export Operations | Tech Stack: Bun, React, Vite, SQLite</p>
+        </footer>
+    </div>
+</body>
+</html>

@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TCONSIAM ERP — Architecture Guide</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #0a0a12; color: #e2e8f0; min-height: 100vh; }
+
+    .header { background: linear-gradient(135deg, #1a3a5c 0%, #2b6cb0 100%); padding: 24px 20px; text-align: center; }
+    .header h1 { font-size: 1.5rem; color: #fff; margin-bottom: 4px; }
+    .header p { font-size: 0.85rem; color: #93c5fd; }
+
+    .breadcrumb { padding: 12px 20px; background: rgba(255,255,255,0.02); border-bottom: 1px solid rgba(255,255,255,0.06); font-size: 0.8rem; }
+    .breadcrumb a { color: #3b82f6; text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+
+    .container { max-width: 1000px; margin: 0 auto; padding: 20px 16px; }
+
+    .card { background: #12121a; border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+    .card h2 { font-size: 1rem; color: #f59e0b; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    .card h3 { font-size: 0.85rem; color: #93c5fd; margin: 12px 0 6px; }
+    .card h4 { font-size: 0.8rem; color: #a5b4fc; margin: 8px 0 4px; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+    th { text-align: left; padding: 8px; color: #9ca3af; font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.02); }
+    td { padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.04); color: #d1d5db; }
+    tr:hover td { background: rgba(255,255,255,0.02); }
+
+    code { background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 4px; font-size: 0.78rem; color: #93c5fd; font-family: 'Monaco', 'Menlo', monospace; }
+    pre { background: #1a1a2e; border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 14px; overflow-x: auto; font-size: 0.75rem; color: #a5b4fc; margin: 8px 0; font-family: 'Monaco', 'Menlo', monospace; line-height: 1.5; }
+
+    .flow { background: #1a1a2e; border-left: 3px solid #3b82f6; padding: 12px; border-radius: 4px; margin: 8px 0; font-size: 0.8rem; }
+
+    .section-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 8px 0; }
+    .section-item { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 12px; }
+    .section-item .label { font-size: 0.7rem; color: #9ca3af; text-transform: uppercase; margin-bottom: 4px; }
+    .section-item .value { font-size: 0.9rem; color: #f59e0b; font-weight: 600; }
+
+    .link-btn { display: inline-block; background: #2b6cb0; color: #fff; text-decoration: none; padding: 8px 16px; border-radius: 8px; font-size: 0.8rem; margin: 4px 4px 4px 0; transition: background 0.2s; }
+    .link-btn:hover { background: #3b82f6; }
+
+    .nav-bottom { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.06); }
+
+    ul { padding-left: 18px; }
+    li { padding: 3px 0; font-size: 0.82rem; color: #d1d5db; }
+
+    .highlight { background: rgba(245, 158, 11, 0.1); border-left: 3px solid #f59e0b; padding: 10px 12px; border-radius: 4px; margin: 8px 0; }
+
+    @media (max-width: 640px) {
+      .section-grid { grid-template-columns: 1fr; }
+      .header h1 { font-size: 1.2rem; }
+      pre { font-size: 0.7rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Architecture Guide</h1>
+  <p>TCONSIAM ERP — System Design & Infrastructure</p>
+</div>
+
+<div class="breadcrumb">
+  <a href="/maw/">MAW Dashboard</a> / <a href="/maw/tconsiam/">TCONSIAM KB</a> / Architecture
+</div>
+
+<div class="container">
+
+  <!-- System Overview -->
+  <div class="card">
+    <h2>System Overview</h2>
+    <p style="margin-bottom: 12px; font-size: 0.85rem; color: #d1d5db;">TCONSIAM ERP is a production-grade business system designed for small-to-medium manufacturing and distribution. All components run on a single VPS with SQLite WAL for data integrity.</p>
+
+    <h3>Data Flow & Architecture Diagram</h3>
+    <pre>
+┌──────────────┐
+│   Browser    │ (React 19, Zustand store, Tailwind CSS)
+└──────┬───────┘
+       │
+       │ HTTPS (port 8890)
+       ▼
+┌──────────────────────────────────────┐
+│         Nginx Reverse Proxy           │
+│  (Static files + /api/* routing)      │
+└────────────────┬─────────────────────┘
+       │         │
+   Static    /api/*
+   files     proxy
+       │         │
+       ▼         ▼
+ /opt/tconsiam-   │
+ dashboard/       │
+ (dist/ build)    │
+            ┌─────▼────────────────────┐
+            │  Bun + Hono Framework    │
+            │  (Port 3457 internal)    │
+            │                          │
+            │ • JWT Auth middleware    │
+            │ • Permission guards      │
+            │ • Request logging        │
+            └────────────┬─────────────┘
+                         │
+            ┌────────────▼─────────────┐
+            │   Drizzle ORM (Typed)    │
+            │   SQL Query Builder      │
+            └────────────┬─────────────┘
+                         │
+            ┌────────────▼──────────────────┐
+            │   SQLite Database             │
+            │   WAL mode (concurrent reads) │
+            │   ~/.config/tconsiam/         │
+            │   db/tconsiam.db              │
+            └───────────────────────────────┘
+    </pre>
+  </div>
+
+  <!-- Directory Structure -->
+  <div class="card">
+    <h2>Repository Structure</h2>
+    <p style="margin-bottom: 12px; font-size: 0.85rem; color: #d1d5db;">The codebase is organized into API backend and UI frontend with shared utilities and configuration.</p>
+
+    <h3>Full Directory Tree</h3>
+    <pre>
+/root/projects/tcon/
+│
+├── api/                              # Backend (Bun + Hono)
+│   ├── src/
+│   │   ├── index.ts                  # Server entry point, route mounting
+│   │   ├── api/
+│   │   │   ├── auth.ts               # Login, logout, register
+│   │   │   ├── dashboard.ts          # Summary, charts, KPIs
+│   │   │   ├── products.ts           # CRUD, search, import/export
+│   │   │   ├── inventory.ts          # Stock movements, adjustments
+│   │   │   ├── customers.ts          # Customer management
+│   │   │   ├── suppliers.ts          # Supplier mgmt
+│   │   │   ├── orders.ts             # Sales + purchase orders
+│   │   │   ├── invoices.ts           # Invoice generation
+│   │   │   ├── quotations.ts         # Quote PDFs with QR
+│   │   │   ├── payments.ts           # Payment tracking
+│   │   │   ├── shipments.ts          # Import cost breakdown
+│   │   │   ├── production.ts         # BOM-based assembly
+│   │   │   ├── qc-claims.ts          # Quality control
+│   │   │   ├── consumables.ts        # Consumable tracking
+│   │   │   ├── reports.ts            # Sales, stock, profit
+│   │   │   ├── notifications.ts      # Alerts & webhooks
+│   │   │   ├── audit.ts              # Audit trail (boss-only)
+│   │   │   ├── backup.ts             # Backup management
+│   │   │   ├── health.ts             # System health check
+│   │   │   └── (14 more modules)
+│   │   ├── db/
+│   │   │   ├── schema.ts             # 27+ Drizzle table definitions
+│   │   │   ├── migrate.ts            # Versioned SQL migrations
+│   │   │   └── index.ts              # SQLite init (WAL mode setup)
+│   │   └── lib/
+│   │       ├── auth.ts               # JWT sign/verify, bcrypt hash
+│   │       ├── middleware.ts         # Auth, logging, error handling
+│   │       ├── pdf-invoice.ts        # Invoice PDF generation (PDFKit)
+│   │       ├── pdf-quotation.ts      # Quotation PDF + QR code
+│   │       ├── pdf-report.ts         # Report PDFs
+│   │       ├── qr.ts                 # QR code generation
+│   │       ├── discord.ts            # Discord webhook integration
+│   │       ├── mailer.ts             # Nodemailer SMTP (Gmail App Password)
+│   │       ├── notify.ts             # Multi-channel notifications
+│   │       └── excel.ts              # Excel import/export (ExcelJS)
+│   │
+│   ├── assets/
+│   │   └── fonts/
+│   │       └── Sarabun-Regular.ttf   # Thai font for PDFs
+│   │
+│   ├── package.json                  # Dependencies: hono, drizzle, pdfkit, etc.
+│   ├── bunfig.toml                   # Bun build config
+│   └── tsconfig.json                 # TypeScript config
+│
+├── ui/                               # Frontend (React 19 + Vite)
+│   ├── src/
+│   │   ├── App.tsx                   # Hash-based routing, main layout
+│   │   ├── components/
+│   │   │   ├── Layout.tsx            # Sidebar, SearchBar, permission guard
+│   │   │   ├── LoginView.tsx         # Auth form
+│   │   │   ├── DashboardView.tsx     # Role-based (boss/warehouse)
+│   │   │   ├── ProductsView.tsx      # Product CRUD + import
+│   │   │   ├── InventoryView.tsx     # Stock movements
+│   │   │   ├── CustomersView.tsx     # Customer list
+│   │   │   ├── SuppliersView.tsx     # Supplier list
+│   │   │   ├── OrdersView.tsx        # Order management
+│   │   │   ├── InvoicesView.tsx      # Invoice list + download
+│   │   │   ├── QuotationsView.tsx    # Quotation list + PDF
+│   │   │   ├── PaymentsView.tsx      # Payment tracking
+│   │   │   ├── ShipmentsView.tsx     # Shipment mgmt
+│   │   │   ├── ProductionView.tsx    # Production orders
+│   │   │   ├── QCClaimsView.tsx      # QC management
+│   │   │   ├── ConsumablesView.tsx   # Consumable tracking
+│   │   │   ├── ReportsView.tsx       # Sales, stock, profit reports
+│   │   │   ├── AuditView.tsx         # Audit trail (boss-only)
+│   │   │   ├── SearchBar.tsx         # Global cross-module search
+│   │   │   └── (4 more views)
+│   │   ├── lib/
+│   │   │   ├── auth.ts               # Zustand store, login/logout
+│   │   │   ├── api.ts                # apiFetch() with JWT, error handling
+│   │   │   └── constants.ts          # API URLs, role definitions
+│   │   ├── index.css                 # Tailwind + globals
+│   │   └── main.tsx                  # React entry point
+│   │
+│   ├── package.json                  # Dependencies: react, vite, tailwind, recharts
+│   ├── vite.config.ts                # Vite config with /api proxy
+│   ├── tailwind.config.js            # Tailwind theme
+│   └── tsconfig.json                 # TypeScript config
+│
+├── scripts/
+│   ├── backup-daily.sh               # Cron job: daily 2am backup
+│   ├── restore-db.sh                 # Database restore script
+│   └── health-check.sh               # Systemd health check
+│
+├── deploy.sh                         # Deploy to production
+├── docker-compose.yml                # Local dev setup (optional)
+├── README.md                         # Project documentation
+└── .gitignore                        # Exclude node_modules, .env, db
+
+    </pre>
+  </div>
+
+  <!-- Infrastructure -->
+  <div class="card">
+    <h2>Infrastructure & Deployment</h2>
+
+    <h3>VPS & Networking</h3>
+    <table>
+      <tr><td style="width:30%; color:#9ca3af">VPS IP</td><td><code>76.13.221.42</code></td></tr>
+      <tr><td style="color:#9ca3af">Public URL</td><td><code>http://76.13.221.42:8890/</code></td></tr>
+      <tr><td style="color:#9ca3af">OS</td><td>Linux (Ubuntu 20.04 LTS)</td></tr>
+      <tr><td style="color:#9ca3af">Memory</td><td>4GB RAM</td></tr>
+      <tr><td style="color:#9ca3af">Storage</td><td>40GB SSD</td></tr>
+    </table>
+
+    <h3>API Server</h3>
+    <table>
+      <tr><td style="width:30%; color:#9ca3af">Runtime</td><td>Bun (v1.x)</td></tr>
+      <tr><td style="color:#9ca3af">Port (Internal)</td><td><code>:3457</code></td></tr>
+      <tr><td style="color:#9ca3af">Systemd Service</td><td><code>tconsiam-api.service</code></td></tr>
+      <tr><td style="color:#9ca3af">Service Status</td><td><code>systemctl status tconsiam-api</code></td></tr>
+      <tr><td style="color:#9ca3af">Logs</td><td><code>journalctl -u tconsiam-api -f</code></td></tr>
+      <tr><td style="color:#9ca3af">Restart</td><td><code>systemctl restart tconsiam-api</code></td></tr>
+    </table>
+
+    <h3>Web Server (Nginx)</h3>
+    <table>
+      <tr><td style="width:30%; color:#9ca3af">Port (Public)</td><td><code>:8890</code></td></tr>
+      <tr><td style="color:#9ca3af">Config</td><td><code>/etc/nginx/sites-enabled/tconsiam</code></td></tr>
+      <tr><td style="color:#9ca3af">Static Root</td><td><code>/opt/tconsiam-dashboard/</code></td></tr>
+      <tr><td style="color:#9ca3af">Reverse Proxy</td><td><code>/api/* → http://localhost:3457/</code></td></tr>
+      <tr><td style="color:#9ca3af">Reload Config</td><td><code>nginx -s reload</code></td></tr>
+    </table>
+
+    <h3>Database</h3>
+    <table>
+      <tr><td style="width:30%; color:#9ca3af">Engine</td><td>SQLite 3</td></tr>
+      <tr><td style="color:#9ca3af">File Location</td><td><code>~/.config/tconsiam/db/tconsiam.db</code></td></tr>
+      <tr><td style="color:#9ca3af">WAL Mode</td><td>Enabled (faster writes, concurrent reads)</td></tr>
+      <tr><td style="color:#9ca3af">Backup Dir</td><td><code>/opt/tconsiam-backups/</code></td></tr>
+      <tr><td style="color:#9ca3af">Backup Schedule</td><td>Daily at 2:00 AM (cron)</td></tr>
+      <tr><td style="color:#9ca3af">Retention</td><td>7 days (auto-clean older)</td></tr>
+      <tr><td style="color:#9ca3af">Backup Size</td><td>~50-200MB (compressed)</td></tr>
+    </table>
+
+    <h3>Dashboard UI</h3>
+    <table>
+      <tr><td style="width:30%; color:#9ca3af">Static Files</td><td><code>/opt/tconsiam-dashboard/</code></td></tr>
+      <tr><td style="color:#9ca3af">Entry Point</td><td><code>index.html</code></td></tr>
+      <tr><td style="color:#9ca3af">Build Output</td><td><code>dist/</code> from <code>vite build</code></td></tr>
+    </table>
+  </div>
+
+  <!-- Key Design Decisions -->
+  <div class="card">
+    <h2>Key Design Decisions</h2>
+
+    <h3>Why SQLite (not PostgreSQL)?</h3>
+    <div class="highlight">
+      <strong>Rationale:</strong> Single-server deployment with low concurrency (1-5 concurrent users). SQLite WAL mode provides ACID compliance, concurrent reads, and zero DevOps overhead. Perfect for TCONSIAM's scale.
+    </div>
+    <ul>
+      <li>Zero configuration — just a file</li>
+      <li>WAL mode enables concurrent reads while writing</li>
+      <li>Backups are simple file copies</li>
+      <li>Zero external dependencies (no PostgreSQL server to manage)</li>
+      <li>Perfect for single-VPS deployments</li>
+    </ul>
+
+    <h3>Why Bun + Hono (not Node.js + Express)?</h3>
+    <div class="highlight">
+      <strong>Rationale:</strong> Bun is a modern JavaScript runtime with native TypeScript, faster startup, lower memory footprint. Hono is lightweight, has native Bun support, and minimal framework overhead.
+    </div>
+    <ul>
+      <li>Bun startup: ~30ms vs Node.js: ~200ms</li>
+      <li>Memory: 40MB vs Node.js: 80MB</li>
+      <li>Native TypeScript compilation (no tsc needed)</li>
+      <li>Hono: 20KB vs Express: 50KB (lighter)</li>
+      <li>Better for small-medium server loads</li>
+    </ul>
+
+    <h3>Why Drizzle ORM (not Prisma or raw SQL)?</h3>
+    <div class="highlight">
+      <strong>Rationale:</strong> Drizzle is lightweight, type-safe, and SQLite-optimized. Zero runtime overhead, TypeScript-first design.
+    </div>
+    <ul>
+      <li>Type-safe queries at compile time</li>
+      <li>Lightweight (no runtime dependency injection)</li>
+      <li>Works with SQLite, PostgreSQL, MySQL</li>
+      <li>Raw SQL when needed (via <code>sql</code> tag)</li>
+      <li>Easy migrations</li>
+    </ul>
+
+    <h3>Why Hash-Based Routing (SPA)?</h3>
+    <div class="highlight">
+      <strong>Rationale:</strong> Single-Page App with hash routing (#/) requires no server-side routing. Works with static hosting, easy to reason about state.
+    </div>
+    <ul>
+      <li>No server-side routing needed — static hosting sufficient</li>
+      <li>Client-side navigation is instant</li>
+      <li>Zustand store persists state in-memory</li>
+      <li>Works offline after first load</li>
+    </ul>
+
+    <h3>Why Computed Stock (not Stored Column)?</h3>
+    <div class="highlight">
+      <strong>Rationale:</strong> Stock is computed as SUM(quantity) from inventory_movements. This ensures the audit trail is the source of truth.
+    </div>
+    <ul>
+      <li>No duplication — single source of truth</li>
+      <li>Automatic consistency (can't get out of sync)</li>
+      <li>Full movement history preserved for auditing</li>
+      <li>Easy to fix with a re-sum if needed</li>
+    </ul>
+  </div>
+
+  <!-- Data Flow -->
+  <div class="card">
+    <h2>Request-Response Data Flow</h2>
+
+    <h3>Typical API Call (with Authentication)</h3>
+    <pre>
+1. Browser User Action
+   └─ React component dispatches action
+      (e.g., ProductsView.tsx: "fetch products")
+
+2. Client Library (api.ts)
+   └─ apiFetch(endpoint, options)
+      ├─ Read JWT token from Zustand store
+      ├─ Set Authorization header: "Bearer &lt;token&gt;"
+      └─ Fetch /api/products (proxied to :3457)
+
+3. Nginx (port 8890)
+   └─ Route /api/* → http://localhost:3457/
+      (static files served directly)
+
+4. Hono API Server (:3457)
+   ├─ Match route: GET /api/products
+   ├─ Run middleware:
+   │  ├─ authMiddleware (extract JWT)
+   │  ├─ verifyToken (check expiry, signature)
+   │  ├─ checkPermission (role-based guard)
+   │  └─ requestLogger (log to stdout)
+   │
+   ├─ Execute handler: async (c) => {...}
+   │  ├─ Extract userId from JWT
+   │  ├─ Query database:
+   │  │  db.select().from(productsTable)
+   │  │    .where(eq(productsTable.companyId, userId.companyId))
+   │  │
+   │  ├─ Apply sorting/filtering/pagination
+   │  └─ Build response: { products: [...], count: N }
+   │
+   ├─ Return 200 + JSON response
+
+5. Browser receives
+   └─ Parse JSON, update Zustand store
+      └─ React re-renders ProductsView
+         with fresh data
+
+6. Error handling
+   ├─ 401 Unauthorized → Redirect to login
+   ├─ 403 Forbidden → Show permission denied
+   ├─ 500 Server Error → Show error toast
+    </pre>
+
+    <h3>PDF Generation Flow</h3>
+    <pre>
+1. User clicks "Download Invoice PDF"
+   └─ InvoicesView.tsx calls api.pdf(invoiceId)
+
+2. Hono handler: GET /api/invoices/:id/pdf
+   ├─ Verify ownership (user's company)
+   ├─ Query invoice + related data:
+   │  ├─ invoice row
+   │  ├─ customer details
+   │  ├─ order items
+   │  └─ payment status
+   ├─ Generate PDF via PDFKit:
+   │  ├─ Add header with logo/company info
+   │  ├─ Add invoice details table
+   │  ├─ Calculate totals
+   │  ├─ Generate QR code (invoice verification)
+   │  ├─ Set Sarabun Thai font for Thai text
+   │  └─ Return PDF buffer
+   └─ Send as Content-Type: application/pdf
+
+3. Browser downloads
+   └─ Filename: invoice-20240409-001.pdf
+    </pre>
+  </div>
+
+  <!-- Database Schema Overview -->
+  <div class="card">
+    <h2>Database Schema Highlights</h2>
+    <p style="margin-bottom: 12px; font-size: 0.85rem; color: #d1d5db;">27+ tables organized around core business entities. All use Drizzle ORM schema definitions in <code>api/src/db/schema.ts</code>.</p>
+
+    <h3>Core Tables</h3>
+    <table>
+      <thead><tr><th>Table</th><th>Purpose</th><th>Key Fields</th></tr></thead>
+      <tbody>
+        <tr><td><code>users</code></td><td>Authentication</td><td>id, username, passwordHash, role (boss/warehouse)</td></tr>
+        <tr><td><code>products</code></td><td>Catalog</td><td>id, sku, name, description, unitCost, sellingPrice</td></tr>
+        <tr><td><code>inventory_movements</code></td><td>Stock ledger</td><td>id, productId, quantity (+/-), type (in/out/adj), date, notes</td></tr>
+        <tr><td><code>customers</code></td><td>Buyer database</td><td>id, name, email, phone, address, creditLimit</td></tr>
+        <tr><td><code>suppliers</code></td><td>Vendor database</td><td>id, name, contact, location (China), leadTime</td></tr>
+        <tr><td><code>orders</code></td><td>Sales + purchase</td><td>id, type (S/P), customerId, totalAmount, status, date</td></tr>
+        <tr><td><code>order_items</code></td><td>Order lines</td><td>id, orderId, productId, qty, unitPrice, subtotal</td></tr>
+        <tr><td><code>invoices</code></td><td>Invoice docs</td><td>id, orderId, number, totalAmount, dueDate, paidDate</td></tr>
+        <tr><td><code>quotations</code></td><td>Quotes to customers</td><td>id, customerId, totalAmount, validUntil, status</td></tr>
+        <tr><td><code>payments</code></td><td>Money in/out</td><td>id, invoiceId, method, amount, date, reference</td></tr>
+        <tr><td><code>audit_logs</code></td><td>Change tracking</td><td>id, userId, tableName, recordId, action, changes, timestamp</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Relationships Example</h3>
+    <pre>
+Customer (1) ─── (N) Orders
+          └────────────────> (N) Invoices
+                                    │
+                                    └─> (N) Payments
+
+Product (1) ─── (N) Order Items
+       └─────> (N) Inventory Movements
+               (SUM = current stock)
+    </pre>
+
+    <h3>Audit Trail</h3>
+    <p style="font-size: 0.85rem; color: #d1d5db; margin: 8px 0;">Every CREATE, UPDATE, DELETE operation logs to <code>audit_logs</code> with user, table, record ID, action, and before/after changes. Boss-only visibility via <code>GET /api/audit</code>.</p>
+  </div>
+
+  <!-- Development Workflow -->
+  <div class="card">
+    <h2>Development Workflow</h2>
+
+    <h3>Local Development</h3>
+    <pre>
+# Terminal 1: API server
+cd /root/projects/tcon/api
+bun run dev
+# Watches src/ for changes, runs on :3457
+
+# Terminal 2: UI dev server
+cd /root/projects/tcon/ui
+bunx vite
+# Vite dev server on :5173
+# Proxies /api/* to http://localhost:3457
+# HMR enabled for instant reload
+
+# Browser: http://localhost:5173
+# (has development build with source maps)
+    </pre>
+
+    <h3>Building for Production</h3>
+    <pre>
+# Build UI
+cd /root/projects/tcon/ui
+bunx vite build
+# Output: dist/ (minified, optimized)
+
+# Build API (if using bundler)
+cd /root/projects/tcon/api
+bun build ./src/index.ts --outdir ./build
+
+# Deploy via deploy.sh
+cd /root/projects/tcon
+./deploy.sh
+# 1. Builds UI
+# 2. Copies dist/ → /opt/tconsiam-dashboard/
+# 3. Restarts tconsiam-api.service
+# 4. Runs health check
+    </pre>
+
+    <h3>Adding a New Module (6-Step Checklist)</h3>
+    <pre>
+Step 1: Add Database Tables
+  └─ Edit api/src/db/schema.ts
+     export const myModule = sqliteTable('my_module', {
+       id: integer('id').primaryKey(),
+       name: text('name').notNull(),
+       ...
+     });
+
+Step 2: Create Migration
+  └─ Edit api/src/db/migrate.ts
+     Add SQL: CREATE TABLE my_module (id INTEGER, ...);
+
+Step 3: Create API Route
+  └─ Create api/src/api/mymodule.ts
+     export default new Hono()
+       .get('/', authMiddleware, async (c) => {
+         // SELECT query
+       })
+       .post('/', authMiddleware, async (c) => {
+         // INSERT query
+       });
+
+Step 4: Mount Route
+  └─ Edit api/src/index.ts
+     app.route('/api/mymodule', myModuleRoutes);
+
+Step 5: Create UI Component
+  └─ Create ui/src/components/MyModuleView.tsx
+     export default function MyModuleView() {
+       const [data, setData] = useState([]);
+       useEffect(() => {
+         apiFetch('/api/mymodule').then(d => setData(d.data));
+       }, []);
+       return <div>...</div>;
+     }
+
+Step 6: Add to Navigation
+  └─ Edit ui/src/App.tsx (routing)
+  └─ Edit ui/src/components/Layout.tsx (sidebar menu)
+    </pre>
+  </div>
+
+  <!-- Deployment Checklist -->
+  <div class="card">
+    <h2>Production Deployment Checklist</h2>
+
+    <table>
+      <thead><tr><th>Step</th><th>Command / Action</th><th>Verify</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>1. Test Locally</strong></td>
+          <td><code>cd /root/projects/tcon && npm test</code></td>
+          <td>All tests pass ✅</td>
+        </tr>
+        <tr>
+          <td><strong>2. Build UI</strong></td>
+          <td><code>cd ui && bunx vite build</code></td>
+          <td><code>dist/</code> created, size &lt;2MB</td>
+        </tr>
+        <tr>
+          <td><strong>3. Copy to VPS</strong></td>
+          <td><code>scp -r dist/ user@76.13.221.42:/opt/tconsiam-dashboard/</code></td>
+          <td>Files appear in <code>/opt/tconsiam-dashboard/index.html</code></td>
+        </tr>
+        <tr>
+          <td><strong>4. Backup DB</strong></td>
+          <td><code>./scripts/backup-daily.sh</code></td>
+          <td>Backup in <code>/opt/tconsiam-backups/</code></td>
+        </tr>
+        <tr>
+          <td><strong>5. Restart API</strong></td>
+          <td><code>systemctl restart tconsiam-api</code></td>
+          <td><code>systemctl status tconsiam-api</code> shows active</td>
+        </tr>
+        <tr>
+          <td><strong>6. Health Check</strong></td>
+          <td><code>curl http://localhost:8890/api/health</code></td>
+          <td>Returns 200 + <code>{ "status": "ok" }</code></td>
+        </tr>
+        <tr>
+          <td><strong>7. Verify UI</strong></td>
+          <td>Open <code>http://76.13.221.42:8890/</code></td>
+          <td>Login page loads, can authenticate</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Troubleshooting -->
+  <div class="card">
+    <h2>Common Issues & Solutions</h2>
+
+    <h3>API returns 401 Unauthorized</h3>
+    <ul>
+      <li><strong>Token expired:</strong> Log out, log back in (JWT has 7-day expiry)</li>
+      <li><strong>Missing Authorization header:</strong> Check <code>api.ts apiFetch()</code> includes Bearer token</li>
+      <li><strong>JWT signature invalid:</strong> Check <code>process.env.JWT_SECRET</code> matches on API</li>
+    </ul>
+
+    <h3>Database file grows too large</h3>
+    <ul>
+      <li><strong>Vacuum:</strong> <code>sqlite3 ~/.config/tconsiam/db/tconsiam.db "VACUUM;"</code></li>
+      <li><strong>Check WAL files:</strong> <code>ls -la ~/.config/tconsiam/db/</code> (should be .db, -wal, -shm)</li>
+      <li><strong>Audit logs huge:</strong> Archive old logs or delete (boss-only)</li>
+    </ul>
+
+    <h3>PDF generation fails</h3>
+    <ul>
+      <li><strong>Font not found:</strong> Check <code>api/assets/fonts/Sarabun-Regular.ttf</code> exists</li>
+      <li><strong>Memory error:</strong> PDFs can be large; check Node heap size</li>
+      <li><strong>QR code error:</strong> Ensure <code>qr.ts</code> library is installed</li>
+    </ul>
+
+    <h3>Nginx returns 502 Bad Gateway</h3>
+    <ul>
+      <li><strong>API not running:</strong> <code>systemctl status tconsiam-api</code> → restart if dead</li>
+      <li><strong>Port 3457 in use:</strong> <code>lsof -i :3457</code> → kill process or restart</li>
+      <li><strong>Nginx config error:</strong> <code>nginx -t</code> → check syntax</li>
+    </ul>
+
+    <h3>React component not rendering</h3>
+    <ul>
+      <li><strong>Hash routing issue:</strong> Check URL includes <code>#/dashboard</code></li>
+      <li><strong>API fetch failing:</strong> Check browser Console for errors + network tab</li>
+      <li><strong>Permission denied:</strong> User role (boss/warehouse) may not have access</li>
+    </ul>
+  </div>
+
+  <!-- Performance & Scaling -->
+  <div class="card">
+    <h2>Performance & Scaling Notes</h2>
+
+    <h3>Current Limits (Single VPS, 4GB RAM)</h3>
+    <ul>
+      <li><strong>Concurrent Users:</strong> ~10-20 (SQLite WAL handles this)</li>
+      <li><strong>Database Size:</strong> Tested to 500MB+ (no issues)</li>
+      <li><strong>API Response Time:</strong> 50-200ms (typical)</li>
+      <li><strong>UI Load Time:</strong> 1-2 seconds (first load), instant after cache</li>
+    </ul>
+
+    <h3>Optimization Tips</h3>
+    <ul>
+      <li><strong>Database Indexes:</strong> Already on productId, customerId, orderId in schema</li>
+      <li><strong>Frontend Caching:</strong> Vite outputs immutable hashed assets (browser cache forever)</li>
+      <li><strong>API Pagination:</strong> All list endpoints support limit/offset</li>
+      <li><strong>Computed Fields:</strong> Avoid real-time calculations in loops — use DB aggregates</li>
+    </ul>
+
+    <h3>When to Migrate (PostgreSQL + dedicated DB server)</h3>
+    <ul>
+      <li>50+ concurrent users</li>
+      <li>Multiple instances/load balancing needed</li>
+      <li>Advanced replication/failover</li>
+      <li>Complex analytical queries</li>
+    </ul>
+  </div>
+
+  <!-- Key Files Reference -->
+  <div class="card">
+    <h2>Key Files Quick Reference</h2>
+
+    <table>
+      <thead><tr><th>File</th><th>Purpose</th><th>Edit When</th></tr></thead>
+      <tbody>
+        <tr><td><code>api/src/index.ts</code></td><td>API server setup, route mounting</td><td>Adding new routes or middleware</td></tr>
+        <tr><td><code>api/src/db/schema.ts</code></td><td>Database table definitions</td><td>Adding new tables/fields</td></tr>
+        <tr><td><code>api/src/db/migrate.ts</code></td><td>SQL migrations</td><td>Running database updates</td></tr>
+        <tr><td><code>api/src/lib/auth.ts</code></td><td>JWT & bcrypt logic</td><td>Changing auth mechanism</td></tr>
+        <tr><td><code>ui/src/App.tsx</code></td><td>Hash routing, layout</td><td>Adding new pages/routes</td></tr>
+        <tr><td><code>ui/src/components/Layout.tsx</code></td><td>Sidebar, navigation</td><td>Adding menu items</td></tr>
+        <tr><td><code>ui/src/lib/api.ts</code></td><td>API client, fetch wrapper</td><td>Changing base URL or headers</td></tr>
+        <tr><td><code>ui/src/lib/auth.ts</code></td><td>Zustand auth store</td><td>Adding auth state</td></tr>
+        <tr><td><code>deploy.sh</code></td><td>Production deployment</td><td>Changing build or deploy steps</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Footer Navigation -->
+  <div class="card" style="margin-bottom: 0;">
+    <div class="nav-bottom">
+      <a href="/maw/tconsiam/" class="link-btn">Back to KB Home</a>
+      <a href="/maw/tconsiam/api-reference.html" class="link-btn">API Reference</a>
+      <a href="/maw/tconsiam/guides/database.html" class="link-btn" style="opacity: 0.5;">Database Guide</a>
+      <a href="/maw/tconsiam/guides/deployment.html" class="link-btn" style="opacity: 0.5;">Deployment Guide</a>
+    </div>
+  </div>
+
+</div>
+
+<div style="text-align:center; padding: 20px; color: #4b5563; font-size: 0.7rem;">
+  TCONSIAM ERP Architecture Guide — Updated 2026-04-09 | <a href="/maw/" style="color: #4b5563; text-decoration: none;">MAW</a>
+</div>
+
+</body>
+</html>

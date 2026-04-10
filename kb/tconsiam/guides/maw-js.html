@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MAW-JS — Multi-Agent Orchestration System</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #0a0a12; color: #e2e8f0; min-height: 100vh; }
+
+    .header { background: linear-gradient(135deg, #1a3a5c 0%, #2b6cb0 100%); padding: 24px 20px; text-align: center; }
+    .header h1 { font-size: 1.5rem; color: #fff; margin-bottom: 4px; }
+    .header p { font-size: 0.85rem; color: #93c5fd; }
+
+    .breadcrumb { padding: 12px 20px; background: rgba(255,255,255,0.02); border-bottom: 1px solid rgba(255,255,255,0.06); font-size: 0.8rem; }
+    .breadcrumb a { color: #3b82f6; text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+
+    .container { max-width: 1000px; margin: 0 auto; padding: 20px 16px; }
+
+    .card { background: #12121a; border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+    .card h2 { font-size: 1rem; color: #f59e0b; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    .card h3 { font-size: 0.85rem; color: #93c5fd; margin: 12px 0 6px; }
+    .card h4 { font-size: 0.8rem; color: #a5b4fc; margin: 8px 0 4px; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+    th { text-align: left; padding: 8px; color: #9ca3af; font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.02); }
+    td { padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.04); color: #d1d5db; }
+    tr:hover td { background: rgba(255,255,255,0.02); }
+
+    code { background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 4px; font-size: 0.78rem; color: #93c5fd; font-family: 'Monaco', 'Menlo', monospace; }
+    pre { background: #1a1a2e; border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 14px; overflow-x: auto; font-size: 0.75rem; color: #a5b4fc; margin: 8px 0; font-family: 'Monaco', 'Menlo', monospace; line-height: 1.5; }
+
+    .flow { background: #1a1a2e; border-left: 3px solid #3b82f6; padding: 12px; border-radius: 4px; margin: 8px 0; font-size: 0.8rem; }
+
+    .section-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 8px 0; }
+    .section-item { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 12px; }
+    .section-item .label { font-size: 0.7rem; color: #9ca3af; text-transform: uppercase; margin-bottom: 4px; }
+    .section-item .value { font-size: 0.9rem; color: #f59e0b; font-weight: 600; }
+
+    .link-btn { display: inline-block; background: #2b6cb0; color: #fff; text-decoration: none; padding: 8px 16px; border-radius: 8px; font-size: 0.8rem; margin: 4px 4px 4px 0; transition: background 0.2s; }
+    .link-btn:hover { background: #3b82f6; }
+
+    .nav-bottom { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.06); }
+
+    ul { padding-left: 18px; }
+    li { padding: 3px 0; font-size: 0.82rem; color: #d1d5db; }
+
+    .highlight { background: rgba(245, 158, 11, 0.1); border-left: 3px solid #f59e0b; padding: 10px 12px; border-radius: 4px; margin: 8px 0; }
+    .version-badge { display: inline-block; background: #10b981; color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; margin-left: 8px; }
+
+    @media (max-width: 640px) {
+      .section-grid { grid-template-columns: 1fr; }
+      .header h1 { font-size: 1.2rem; }
+      pre { font-size: 0.7rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>MAW-JS <span class="version-badge">v1.8.0</span></h1>
+  <p>Multi-Agent Orchestration System — CLI, API, Web UI for Managing Oracle AI Agents</p>
+</div>
+
+<div class="breadcrumb">
+  <a href="/maw/">MAW Dashboard</a> / <a href="/maw/tconsiam/">TCONSIAM KB</a> / MAW-JS Guide
+</div>
+
+<div class="container">
+
+  <!-- Overview -->
+  <div class="card">
+    <h2>📋 Overview</h2>
+    <p style="margin-bottom: 12px; font-size: 0.85rem; color: #d1d5db;">MAW-JS is a powerful multi-agent orchestration system built with Bun + Hono + React 19 + Three.js + xterm.js. It provides unified control for managing Oracle AI agents across single machines and federated networks.</p>
+
+    <h3>Core Capabilities</h3>
+    <ul>
+      <li><strong>58+ CLI commands</strong> organized by domain (agent lifecycle, fleet, communication, consciousness, federation)</li>
+      <li><strong>Multi-transport routing</strong> with automatic failover (tmux → MQTT → HTTP)</li>
+      <li><strong>Federation mesh</strong> for cross-machine communication with HMAC-SHA256 authentication</li>
+      <li><strong>Hybrid status detection</strong> using command names, screen hashes, and real hooks for crash detection</li>
+      <li><strong>SQLite + Drizzle ORM</strong> with WAL mode for persistence and auto-migrations</li>
+      <li><strong>Web Dashboard</strong> featuring real-time agent monitoring, PTY streaming, and consciousness visualization</li>
+      <li><strong>Discord integration</strong> with bidirectional chat, deploy alerts, and health escalation</li>
+    </ul>
+  </div>
+
+  <!-- Version Info -->
+  <div class="card">
+    <h2>🚀 Current Version: v1.8.0</h2>
+    <p style="font-size: 0.85rem; color: #d1d5db; margin-bottom: 12px;"><strong>Released:</strong> 2026-04-09</p>
+
+    <h3>v1.8.0 Changes</h3>
+    <ul>
+      <li><code>soul-sync --project</code> flag for project-scoped synchronization</li>
+      <li>Federation peer routing fixes (findWindow null fix)</li>
+      <li><code>maw bud --help</code> no longer accidentally creates Oracle (#203)</li>
+      <li>Team commands: shutdown, list</li>
+      <li>Oracle scan/fleet capabilities enhancement</li>
+      <li>Session routing + deduplication improvements</li>
+    </ul>
+  </div>
+
+  <!-- Architecture -->
+  <div class="card">
+    <h2>🏗️ Architecture</h2>
+
+    <h3>System Flow</h3>
+    <pre>
+CLI (maw &lt;command&gt;) → Command Router → Transport Layer
+                                         ├── Tmux (local)
+                                         ├── MQTT (cross-host)
+                                         └── HTTP (fallback)
+
+Server (Hono) → WebSocket Engine → Browser Dashboard
+             → REST API → Agent management
+             → MQTT Broker → Federation mesh
+    </pre>
+
+    <h3>Core Infrastructure</h3>
+    <div class="section-grid">
+      <div class="section-item">
+        <div class="label">Server Framework</div>
+        <div class="value">Bun + Hono</div>
+      </div>
+      <div class="section-item">
+        <div class="label">Server Port</div>
+        <div class="value">3456</div>
+      </div>
+      <div class="section-item">
+        <div class="label">Message Broker</div>
+        <div class="value">Aedes MQTT</div>
+      </div>
+      <div class="section-item">
+        <div class="label">Broker Protocol</div>
+        <div class="value">TCP + WebSocket</div>
+      </div>
+      <div class="section-item">
+        <div class="label">Database</div>
+        <div class="value">SQLite + Drizzle</div>
+      </div>
+      <div class="section-item">
+        <div class="label">DB Mode</div>
+        <div class="value">WAL (Write-Ahead Log)</div>
+      </div>
+      <div class="section-item">
+        <div class="label">Process Manager</div>
+        <div class="value">PM2</div>
+      </div>
+      <div class="section-item">
+        <div class="label">Build Output</div>
+        <div class="value">Single binary via Bun</div>
+      </div>
+    </div>
+
+    <h3>Frontend Stack</h3>
+    <ul>
+      <li><strong>React 19</strong> — UI framework</li>
+      <li><strong>Three.js</strong> — 3D consciousness visualization</li>
+      <li><strong>xterm.js</strong> — Terminal emulation for PTY streaming</li>
+      <li><strong>WebSocket</strong> — Real-time communication with server</li>
+    </ul>
+
+    <h3>Transport Priority Chain</h3>
+    <div class="flow">
+      ① Local Tmux connection (lowest latency) → ② MQTT cross-host (federation) → ③ HTTP fallback (last resort)
+    </div>
+  </div>
+
+  <!-- Command Categories -->
+  <div class="card">
+    <h2>⚙️ Command Categories (58+ Commands)</h2>
+
+    <table>
+      <tr>
+        <th>Category</th>
+        <th>Examples</th>
+        <th>Purpose</th>
+      </tr>
+      <tr>
+        <td><strong>Agent Lifecycle</strong></td>
+        <td><code>ls</code>, <code>peek</code>, <code>wake</code>, <code>sleep</code>, <code>done</code>, <code>bud</code></td>
+        <td>Create, list, wake, pause, and manage individual agents</td>
+      </tr>
+      <tr>
+        <td><strong>Fleet Management</strong></td>
+        <td><code>fleet init</code>, <code>fleet ls</code>, <code>fleet sync</code>, <code>pulse board</code></td>
+        <td>Manage multiple agents as a coordinated fleet</td>
+      </tr>
+      <tr>
+        <td><strong>Communication</strong></td>
+        <td><code>hey</code>, <code>wire</code>, <code>talk-to</code>, <code>broadcast</code></td>
+        <td>Send messages, create connections, broadcast to groups</td>
+      </tr>
+      <tr>
+        <td><strong>Consciousness</strong></td>
+        <td><code>think</code> (7-phase cycles), consciousness tracking</td>
+        <td>Monitor and visualize agent thinking patterns</td>
+      </tr>
+      <tr>
+        <td><strong>Workspaces</strong></td>
+        <td><code>create</code>, <code>join</code>, <code>share</code>, <code>leave</code></td>
+        <td>Organize agents into collaborative workspaces</td>
+      </tr>
+      <tr>
+        <td><strong>Knowledge</strong></td>
+        <td><code>reunion</code>, <code>soul-sync</code></td>
+        <td>Synchronize knowledge and capabilities across agents</td>
+      </tr>
+      <tr>
+        <td><strong>Federation</strong></td>
+        <td><code>ping</code>, <code>federation status</code></td>
+        <td>Cross-machine mesh networking and health checks</td>
+      </tr>
+      <tr>
+        <td><strong>Team Management</strong></td>
+        <td><code>team shutdown</code>, <code>team list</code></td>
+        <td>Organize and manage agent teams</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- GitHub & Repository -->
+  <div class="card">
+    <h2>🔗 GitHub Repository</h2>
+
+    <div class="section-grid">
+      <div class="section-item">
+        <div class="label">Repository</div>
+        <div class="value">Soul-Brews-Studio/maw-js</div>
+      </div>
+      <div class="section-item">
+        <div class="label">Active Branches</div>
+        <div class="value">17+</div>
+      </div>
+    </div>
+
+    <h3>Key Development Branches</h3>
+    <ul>
+      <li><code>alpha</code> — Pre-release builds</li>
+      <li><code>feat/mega-agent</code> — Large-scale agent orchestration</li>
+      <li><code>feat/multi-user-socket</code> — Multi-user dashboard support</li>
+      <li><code>feat/wasm-office</code> — WebAssembly office suite integration</li>
+    </ul>
+  </div>
+
+  <!-- Key Features Deep Dive -->
+  <div class="card">
+    <h2>✨ Key Features</h2>
+
+    <h3>Multi-Transport Routing</h3>
+    <p style="font-size: 0.85rem; color: #d1d5db; margin-bottom: 8px;">Intelligent routing with automatic failover ensures reliable communication:</p>
+    <ul>
+      <li><strong>Tmux (Local)</strong> — Direct screen attachment for same-machine agents (lowest latency)</li>
+      <li><strong>MQTT (Cross-Host)</strong> — Publish-subscribe for federation mesh and remote agents</li>
+      <li><strong>HTTP (Fallback)</strong> — Stateless REST API endpoint as final fallback</li>
+    </ul>
+
+    <h3>Federation Mesh</h3>
+    <p style="font-size: 0.85rem; color: #d1d5db; margin-bottom: 8px;">Cross-machine communication with security:</p>
+    <ul>
+      <li>HMAC-SHA256 authentication for peer verification</li>
+      <li>Automatic peer discovery and routing</li>
+      <li>Health monitoring and connection status tracking</li>
+      <li>Peer routing optimization (findWindow null fix in v1.8.0)</li>
+    </ul>
+
+    <h3>Hybrid Status Detection</h3>
+    <p style="font-size: 0.85rem; color: #d1d5db; margin-bottom: 8px;">Combines multiple signals to accurately detect agent state:</p>
+    <ul>
+      <li>Command name inspection</li>
+      <li>Screen hash validation (unique identifier per session)</li>
+      <li>Real hooks for crash detection</li>
+      <li>Fallback to last-known state</li>
+    </ul>
+
+    <h3>Web Dashboard</h3>
+    <p style="font-size: 0.85rem; color: #d1d5db; margin-bottom: 8px;">Real-time monitoring and control:</p>
+    <ul>
+      <li>Live agent status and metrics</li>
+      <li>PTY (pseudo-terminal) streaming for remote shell access</li>
+      <li>3D consciousness visualization via Three.js</li>
+      <li>Multi-user support with WebSocket sync</li>
+    </ul>
+
+    <h3>Discord Integration</h3>
+    <p style="font-size: 0.85rem; color: #d1d5db; margin-bottom: 8px;">Bidirectional communication bridge:</p>
+    <ul>
+      <li>Chat with agents via Discord channels</li>
+      <li>Deployment alerts and notifications</li>
+      <li>Health escalation for critical issues</li>
+    </ul>
+
+    <h3>Data Persistence</h3>
+    <p style="font-size: 0.85rem; color: #d1d5db; margin-bottom: 8px;">Robust database layer:</p>
+    <ul>
+      <li>SQLite with WAL (Write-Ahead Logging) mode for crash safety</li>
+      <li>Drizzle ORM for type-safe database access</li>
+      <li>Auto-migrations on startup</li>
+    </ul>
+  </div>
+
+  <!-- CLI Usage -->
+  <div class="card">
+    <h2>🖥️ CLI Usage Examples</h2>
+
+    <h3>List All Agents</h3>
+    <pre>maw ls</pre>
+
+    <h3>Wake an Agent</h3>
+    <pre>maw wake oracle-name</pre>
+
+    <h3>Create New Agent</h3>
+    <pre>maw bud --name my-agent</pre>
+
+    <h3>Peer-to-Peer Communication</h3>
+    <pre>maw talk-to agent-name "message content"</pre>
+
+    <h3>Broadcast to Fleet</h3>
+    <pre>maw broadcast "message for all agents"</pre>
+
+    <h3>Fleet Synchronization</h3>
+    <pre>maw fleet sync</pre>
+
+    <h3>Soul Sync with Project Scope</h3>
+    <pre>maw soul-sync --project my-project</pre>
+
+    <h3>Federation Status</h3>
+    <pre>maw federation status</pre>
+  </div>
+
+  <!-- Related Guides -->
+  <div class="card">
+    <h2>📚 Related Resources</h2>
+    <p style="font-size: 0.85rem; color: #d1d5db; margin-bottom: 12px;">Learn more about TCONSIAM and its components:</p>
+
+    <div class="nav-bottom">
+      <a href="architecture.html" class="link-btn">Architecture Guide</a>
+      <a href="modules.html" class="link-btn">ERP Modules</a>
+      <a href="workflows.html" class="link-btn">Workflows</a>
+      <a href="oracle-skills.html" class="link-btn">Oracle Skills</a>
+      <a href="/maw/tconsiam/" class="link-btn">← Back to KB</a>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

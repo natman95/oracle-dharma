@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TCONSIAM — Database Guide</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #0a0a12; color: #e2e8f0; min-height: 100vh; }
+
+    .header { background: linear-gradient(135deg, #1a3a2e 0%, #065f46 100%); padding: 24px 20px; text-align: center; }
+    .header h1 { font-size: 1.5rem; color: #fff; margin-bottom: 4px; }
+    .header p { font-size: 0.85rem; color: #6ee7b7; }
+
+    .breadcrumb { padding: 12px 20px; background: rgba(255,255,255,0.02); border-bottom: 1px solid rgba(255,255,255,0.06); font-size: 0.8rem; }
+    .breadcrumb a { color: #3b82f6; text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+
+    .container { max-width: 1000px; margin: 0 auto; padding: 20px 16px; }
+
+    .card { background: #12121a; border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+    .card h2 { font-size: 1rem; color: #f59e0b; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    .card h3 { font-size: 0.85rem; color: #6ee7b7; margin: 12px 0 6px; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+    th { text-align: left; padding: 8px; color: #9ca3af; font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.02); }
+    td { padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.04); color: #d1d5db; }
+    tr:hover td { background: rgba(255,255,255,0.02); }
+
+    code { background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 4px; font-size: 0.78rem; color: #6ee7b7; font-family: 'Monaco', 'Menlo', monospace; }
+    pre { background: #1a1a2e; border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 14px; overflow-x: auto; font-size: 0.75rem; color: #a5b4fc; margin: 8px 0; font-family: 'Monaco', 'Menlo', monospace; line-height: 1.5; }
+
+    .highlight { background: rgba(245, 158, 11, 0.1); border-left: 3px solid #f59e0b; padding: 10px 12px; border-radius: 4px; margin: 8px 0; font-size: 0.85rem; }
+
+    .section-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 8px 0; }
+    .section-item { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 12px; }
+    .section-item .label { font-size: 0.7rem; color: #9ca3af; text-transform: uppercase; margin-bottom: 4px; }
+    .section-item .value { font-size: 0.9rem; color: #10b981; font-weight: 600; }
+
+    .link-btn { display: inline-block; background: #065f46; color: #fff; text-decoration: none; padding: 8px 16px; border-radius: 8px; font-size: 0.8rem; margin: 4px 4px 4px 0; transition: background 0.2s; }
+    .link-btn:hover { background: #10b981; }
+
+    .nav-bottom { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.06); }
+
+    ul { padding-left: 18px; }
+    li { padding: 3px 0; font-size: 0.82rem; color: #d1d5db; }
+
+    .flow { background: #1a1a2e; border-left: 3px solid #10b981; padding: 12px; border-radius: 4px; margin: 8px 0; font-size: 0.8rem; }
+
+    @media (max-width: 640px) {
+      .section-grid { grid-template-columns: 1fr; }
+      .header h1 { font-size: 1.2rem; }
+      pre { font-size: 0.7rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Database Guide</h1>
+  <p>SQLite + Drizzle ORM — Schema, Migrations, Backup & Maintenance</p>
+</div>
+
+<div class="breadcrumb">
+  <a href="/maw/">MAW Dashboard</a> / <a href="/maw/tconsiam/">TCONSIAM KB</a> / Database Guide
+</div>
+
+<div class="container">
+
+  <!-- Overview -->
+  <div class="card">
+    <h2>Overview</h2>
+    <p style="margin-bottom: 12px; font-size: 0.85rem; color: #d1d5db;">TCONSIAM uses SQLite 3 with WAL (Write-Ahead Logging) mode, managed through Drizzle ORM for type-safe database access. All data lives in a single file on the VPS.</p>
+
+    <div class="section-grid">
+      <div class="section-item">
+        <div class="label">Engine</div>
+        <div class="value">SQLite 3</div>
+      </div>
+      <div class="section-item">
+        <div class="label">ORM</div>
+        <div class="value">Drizzle</div>
+      </div>
+      <div class="section-item">
+        <div class="label">Mode</div>
+        <div class="value">WAL</div>
+      </div>
+      <div class="section-item">
+        <div class="label">Location</div>
+        <div class="value">~/.config/tconsiam/db/</div>
+      </div>
+      <div class="section-item">
+        <div class="label">Schema File</div>
+        <div class="value">api/src/db/schema.ts</div>
+      </div>
+      <div class="section-item">
+        <div class="label">Migrations</div>
+        <div class="value">27+ versioned</div>
+      </div>
+    </div>
+
+    <div class="highlight">
+      <strong>Why SQLite?</strong> Single-server deployment with 1-5 concurrent users. WAL mode provides ACID compliance, concurrent reads, and zero DevOps overhead. Backups are simple file copies.
+    </div>
+  </div>
+
+  <!-- Schema -->
+  <div class="card">
+    <h2>Core Tables (27+)</h2>
+    <p style="margin-bottom: 12px; font-size: 0.85rem; color: #d1d5db;">All table definitions live in <code>api/src/db/schema.ts</code> using Drizzle ORM syntax.</p>
+
+    <table>
+      <thead><tr><th>Table</th><th>Purpose</th><th>Key Fields</th></tr></thead>
+      <tbody>
+        <tr><td><code>users</code></td><td>Authentication</td><td>id, username, passwordHash, role (boss/warehouse)</td></tr>
+        <tr><td><code>products</code></td><td>Catalog</td><td>id, sku, name, description, unitCost, sellingPrice</td></tr>
+        <tr><td><code>inventory_movements</code></td><td>Stock ledger</td><td>id, productId, quantity (+/-), type (in/out/adj), date, notes</td></tr>
+        <tr><td><code>customers</code></td><td>Buyer database</td><td>id, name, email, phone, address, creditLimit</td></tr>
+        <tr><td><code>suppliers</code></td><td>Vendor database</td><td>id, name, contact, location (China), leadTime</td></tr>
+        <tr><td><code>orders</code></td><td>Sales + purchase</td><td>id, type (S/P), customerId, totalAmount, status, date</td></tr>
+        <tr><td><code>order_items</code></td><td>Order lines</td><td>id, orderId, productId, qty, unitPrice, subtotal</td></tr>
+        <tr><td><code>invoices</code></td><td>Invoice docs</td><td>id, orderId, number, totalAmount, dueDate, paidDate</td></tr>
+        <tr><td><code>quotations</code></td><td>Quotes to customers</td><td>id, customerId, totalAmount, validUntil, status</td></tr>
+        <tr><td><code>payments</code></td><td>Money in/out</td><td>id, invoiceId, method, amount, date, reference</td></tr>
+        <tr><td><code>audit_logs</code></td><td>Change tracking</td><td>id, userId, tableName, recordId, action, changes, timestamp</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Relationships</h3>
+    <pre>
+Customer (1) ─── (N) Orders
+          └────────────────> (N) Invoices
+                                    │
+                                    └─> (N) Payments
+
+Product (1) ─── (N) Order Items
+       └─────> (N) Inventory Movements
+               (SUM = current stock)
+    </pre>
+  </div>
+
+  <!-- Drizzle ORM -->
+  <div class="card">
+    <h2>Drizzle ORM Usage</h2>
+
+    <h3>Schema Definition Example</h3>
+    <pre>
+// api/src/db/schema.ts
+import { sqliteTable, integer, text } from 'drizzle-orm/sqlite-core';
+
+export const products = sqliteTable('products', {
+  id: integer('id').primaryKey(),
+  sku: text('sku').notNull(),
+  name: text('name').notNull(),
+  description: text('description'),
+  unitCost: integer('unit_cost').notNull(),
+  sellingPrice: integer('selling_price').notNull(),
+  companyId: integer('company_id').notNull(),
+});
+    </pre>
+
+    <h3>Query Examples</h3>
+    <pre>
+// SELECT with filter
+const items = await db.select()
+  .from(products)
+  .where(eq(products.companyId, user.companyId));
+
+// INSERT
+await db.insert(products).values({
+  sku: 'LAB-001', name: 'Labubu Mini',
+  unitCost: 250, sellingPrice: 590,
+  companyId: user.companyId,
+});
+
+// UPDATE
+await db.update(products)
+  .set({ sellingPrice: 690 })
+  .where(eq(products.id, productId));
+    </pre>
+  </div>
+
+  <!-- Migrations -->
+  <div class="card">
+    <h2>Migrations</h2>
+    <p style="margin-bottom: 12px; font-size: 0.85rem; color: #d1d5db;">27+ versioned migrations in <code>api/src/db/migrate.ts</code>. Migrations run automatically on server startup.</p>
+
+    <h3>Adding a New Table</h3>
+    <pre>
+Step 1: Define schema in api/src/db/schema.ts
+  export const myTable = sqliteTable('my_table', { ... });
+
+Step 2: Add migration SQL in api/src/db/migrate.ts
+  CREATE TABLE IF NOT EXISTS my_table (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    created_at TEXT DEFAULT (datetime('now'))
+  );
+
+Step 3: Restart API — migration runs automatically
+  systemctl restart tconsiam-api
+    </pre>
+
+    <div class="highlight">
+      <strong>Important:</strong> Always use <code>CREATE TABLE IF NOT EXISTS</code> to make migrations idempotent. Never drop tables in production.
+    </div>
+  </div>
+
+  <!-- WAL Mode -->
+  <div class="card">
+    <h2>WAL Mode</h2>
+    <p style="margin-bottom: 12px; font-size: 0.85rem; color: #d1d5db;">WAL (Write-Ahead Logging) is enabled at database initialization in <code>api/src/db/index.ts</code>.</p>
+
+    <h3>Benefits</h3>
+    <ul>
+      <li><strong>Concurrent reads</strong> — Multiple readers don't block each other</li>
+      <li><strong>Non-blocking writes</strong> — Readers continue during writes</li>
+      <li><strong>Crash safety</strong> — ACID compliant, auto-recovery on restart</li>
+      <li><strong>Better performance</strong> — Fewer disk syncs than journal mode</li>
+    </ul>
+
+    <h3>WAL Files</h3>
+    <pre>
+~/.config/tconsiam/db/
+  tconsiam.db          # Main database
+  tconsiam.db-wal      # Write-ahead log (auto-managed)
+  tconsiam.db-shm      # Shared memory index (auto-managed)
+    </pre>
+
+    <div class="flow">
+      Never delete <code>.db-wal</code> or <code>.db-shm</code> files while the API is running. They contain uncommitted data. Stop the API first if you need to copy the database.
+    </div>
+  </div>
+
+  <!-- Backup -->
+  <div class="card">
+    <h2>Backup & Restore</h2>
+
+    <h3>Safe Backup (API running)</h3>
+    <pre>
+# Use SQLite backup command (safe with WAL)
+sqlite3 ~/.config/tconsiam/db/tconsiam.db ".backup /tmp/tconsiam-backup.db"
+
+# Or stop API first for file copy
+systemctl stop tconsiam-api
+cp ~/.config/tconsiam/db/tconsiam.db /backup/tconsiam-$(date +%Y%m%d).db
+systemctl start tconsiam-api
+    </pre>
+
+    <h3>Restore</h3>
+    <pre>
+systemctl stop tconsiam-api
+cp /backup/tconsiam-20260409.db ~/.config/tconsiam/db/tconsiam.db
+systemctl start tconsiam-api
+    </pre>
+
+    <div class="highlight">
+      <strong>Principle:</strong> Nothing is Deleted. Always keep backups before any schema change or data migration.
+    </div>
+  </div>
+
+  <!-- Audit Trail -->
+  <div class="card">
+    <h2>Audit Trail</h2>
+    <p style="margin-bottom: 12px; font-size: 0.85rem; color: #d1d5db;">Every CREATE, UPDATE, DELETE logs to <code>audit_logs</code> with full before/after changes.</p>
+
+    <table>
+      <thead><tr><th>Field</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>userId</code></td><td>Who made the change</td></tr>
+        <tr><td><code>tableName</code></td><td>Which table was affected</td></tr>
+        <tr><td><code>recordId</code></td><td>Which record changed</td></tr>
+        <tr><td><code>action</code></td><td>CREATE / UPDATE / DELETE</td></tr>
+        <tr><td><code>changes</code></td><td>JSON diff (before/after values)</td></tr>
+        <tr><td><code>timestamp</code></td><td>When it happened</td></tr>
+      </tbody>
+    </table>
+
+    <div class="flow">
+      Access: <code>GET /api/audit</code> — Boss-only visibility. Warehouse users cannot view audit logs.
+    </div>
+  </div>
+
+  <!-- Performance -->
+  <div class="card">
+    <h2>Performance Limits</h2>
+
+    <div class="section-grid">
+      <div class="section-item">
+        <div class="label">Concurrent Users</div>
+        <div class="value">~10-20</div>
+      </div>
+      <div class="section-item">
+        <div class="label">DB Size Tested</div>
+        <div class="value">500MB+</div>
+      </div>
+      <div class="section-item">
+        <div class="label">API Response</div>
+        <div class="value">50-200ms</div>
+      </div>
+      <div class="section-item">
+        <div class="label">Write Throughput</div>
+        <div class="value">~1000 TPS</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Troubleshooting -->
+  <div class="card">
+    <h2>Troubleshooting</h2>
+
+    <h3>Database locked</h3>
+    <ul>
+      <li>Check for long-running queries or zombie processes</li>
+      <li>Verify WAL mode is enabled: <code>sqlite3 tconsiam.db "PRAGMA journal_mode;"</code></li>
+      <li>Restart API if needed: <code>systemctl restart tconsiam-api</code></li>
+    </ul>
+
+    <h3>Migration fails on startup</h3>
+    <ul>
+      <li>Check API logs: <code>journalctl -u tconsiam-api -n 50</code></li>
+      <li>Verify SQL syntax in <code>api/src/db/migrate.ts</code></li>
+      <li>Backup DB before retrying</li>
+    </ul>
+
+    <h3>Data not appearing</h3>
+    <ul>
+      <li>Check <code>companyId</code> filter — all queries are scoped to user's company</li>
+      <li>Verify JWT token is valid and contains correct userId</li>
+    </ul>
+  </div>
+
+  <!-- Navigation -->
+  <div class="card">
+    <h2>Related Guides</h2>
+    <div class="nav-bottom">
+      <a href="architecture.html" class="link-btn">Architecture</a>
+      <a href="modules.html" class="link-btn">Modules</a>
+      <a href="deployment.html" class="link-btn">Deployment</a>
+      <a href="/maw/tconsiam/api-reference.html" class="link-btn">API Reference</a>
+      <a href="/maw/tconsiam/" class="link-btn">Back to KB</a>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

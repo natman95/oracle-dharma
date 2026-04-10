@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>arra-oracle-skills-cli — Skill Guide</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #0a0a12; color: #e2e8f0; min-height: 100vh; }
+
+    .header { background: linear-gradient(135deg, #1a3a5c 0%, #2b6cb0 100%); padding: 24px 20px; text-align: center; }
+    .header h1 { font-size: 1.5rem; color: #fff; margin-bottom: 4px; }
+    .header p { font-size: 0.85rem; color: #93c5fd; }
+
+    .breadcrumb { padding: 12px 20px; background: rgba(255,255,255,0.02); border-bottom: 1px solid rgba(255,255,255,0.06); font-size: 0.8rem; }
+    .breadcrumb a { color: #3b82f6; text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+
+    .container { max-width: 1000px; margin: 0 auto; padding: 20px 16px; }
+
+    .card { background: #12121a; border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+    .card h2 { font-size: 1rem; color: #f59e0b; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    .card h3 { font-size: 0.85rem; color: #93c5fd; margin: 12px 0 6px; }
+    .card h4 { font-size: 0.8rem; color: #a5b4fc; margin: 8px 0 4px; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+    th { text-align: left; padding: 8px; color: #9ca3af; font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.02); }
+    td { padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.04); color: #d1d5db; }
+    tr:hover td { background: rgba(255,255,255,0.02); }
+
+    code { background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 4px; font-size: 0.78rem; color: #93c5fd; font-family: 'Monaco', 'Menlo', monospace; }
+    pre { background: #1a1a2e; border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 14px; overflow-x: auto; font-size: 0.75rem; color: #a5b4fc; margin: 8px 0; font-family: 'Monaco', 'Menlo', monospace; line-height: 1.5; }
+
+    .flow { background: #1a1a2e; border-left: 3px solid #3b82f6; padding: 12px; border-radius: 4px; margin: 8px 0; font-size: 0.8rem; }
+
+    .section-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 8px 0; }
+    .section-item { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 12px; }
+    .section-item .label { font-size: 0.7rem; color: #9ca3af; text-transform: uppercase; margin-bottom: 4px; }
+    .section-item .value { font-size: 0.9rem; color: #f59e0b; font-weight: 600; }
+
+    .link-btn { display: inline-block; background: #2b6cb0; color: #fff; text-decoration: none; padding: 8px 16px; border-radius: 8px; font-size: 0.8rem; margin: 4px 4px 4px 0; transition: background 0.2s; }
+    .link-btn:hover { background: #3b82f6; }
+
+    .nav-bottom { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.06); }
+
+    ul { padding-left: 18px; }
+    li { padding: 3px 0; font-size: 0.82rem; color: #d1d5db; }
+
+    .highlight { background: rgba(245, 158, 11, 0.1); border-left: 3px solid #f59e0b; padding: 10px 12px; border-radius: 4px; margin: 8px 0; }
+
+    .skill-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; margin: 12px 0; }
+    .skill-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 14px; }
+    .skill-card .skill-name { font-weight: 600; color: #f59e0b; font-size: 0.85rem; margin-bottom: 4px; }
+    .skill-card .skill-type { font-size: 0.7rem; color: #9ca3af; text-transform: uppercase; margin-bottom: 6px; }
+    .skill-card .skill-desc { font-size: 0.8rem; color: #d1d5db; }
+
+    .profile-box { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 12px; margin: 8px 0; }
+    .profile-box .name { font-weight: 600; color: #f59e0b; font-size: 0.85rem; margin-bottom: 6px; }
+    .profile-box .skills { font-size: 0.78rem; color: #d1d5db; }
+
+    @media (max-width: 640px) {
+      .section-grid { grid-template-columns: 1fr; }
+      .skill-grid { grid-template-columns: 1fr; }
+      .header h1 { font-size: 1.2rem; }
+      pre { font-size: 0.7rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>arra-oracle-skills-cli</h1>
+  <p>Persistent memory, session awareness, and collaborative tools for AI coding agents</p>
+</div>
+
+<div class="breadcrumb">
+  <a href="/maw/">MAW Dashboard</a> / <a href="/maw/tconsiam/">TCONSIAM KB</a> / Oracle Skills
+</div>
+
+<div class="container">
+
+  <!-- Overview -->
+  <div class="card">
+    <h2>What is arra-oracle-skills-cli?</h2>
+    <p style="margin-bottom: 12px; font-size: 0.85rem; color: #d1d5db;">
+      <code>arra-oracle-skills-cli</code> is an npm package that installs Oracle skills — reusable, AI-first workflow commands — into Claude Code, Cursor, OpenCode, GitHub Copilot, and 14+ other AI coding agents.
+    </p>
+    <p style="margin-bottom: 12px; font-size: 0.85rem; color: #d1d5db;">
+      Skills extend your AI agent with persistent memory, session awareness, cross-repo pattern discovery, and collaboration features. Install once globally, use everywhere.
+    </p>
+
+    <div class="section-grid">
+      <div class="section-item">
+        <div class="label">Current Version</div>
+        <div class="value">3.6.1</div>
+      </div>
+      <div class="section-item">
+        <div class="label">Total Skills</div>
+        <div class="value">26</div>
+      </div>
+      <div class="section-item">
+        <div class="label">Supported Agents</div>
+        <div class="value">18+</div>
+      </div>
+      <div class="section-item">
+        <div class="label">Repository</div>
+        <div class="value">MIT License</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Installation -->
+  <div class="card">
+    <h2>Installation & Updates</h2>
+
+    <h3>Install for Claude Code (Standard Profile)</h3>
+    <pre>npx arra-oracle-skills@3.6.1 install -g -y --agent claude-code</pre>
+
+    <h3>Install Full Profile (All 26 Skills)</h3>
+    <pre>npx arra-oracle-skills@3.6.1 install -g -y -p full --agent claude-code</pre>
+
+    <h3>Install Lab Profile (Full + Experimental)</h3>
+    <pre>npx arra-oracle-skills@3.6.1 install -g -y -p lab --agent claude-code</pre>
+
+    <h3>Install Specific Skills</h3>
+    <pre>npx arra-oracle-skills@3.6.1 install -g -y -s recap rrr trace --agent claude-code</pre>
+
+    <h3>Install for Multiple Agents</h3>
+    <pre>npx arra-oracle-skills@3.6.1 install -g -y --agent claude-code codex opencode cursor</pre>
+
+    <div class="highlight">
+      <strong>Auto-Update:</strong> Use the <code>/soul-sync</code> skill to check and update to the latest version anytime.
+    </div>
+
+    <h3>Supported Agents (18)</h3>
+    <p style="font-size: 0.82rem; color: #d1d5db; margin-top: 8px;">
+      Claude Code, Codex, OpenCode, Cursor, Gemini CLI, Amp, Kilo Code, Roo Code, Goose, Antigravity, GitHub Copilot, OpenClaw, Droid, Windsurf, Cline, Aider, Continue, Zed
+    </p>
+  </div>
+
+  <!-- Profiles -->
+  <div class="card">
+    <h2>Skill Profiles</h2>
+    <p style="margin-bottom: 12px; font-size: 0.85rem; color: #d1d5db;">
+      Three profiles let you choose the right level of functionality. Switch anytime with <code>/go standard</code>, <code>/go full</code>, or <code>/go lab</code>.
+    </p>
+
+    <div class="profile-box">
+      <div class="name">standard (16 skills) — Default</div>
+      <div class="skills">
+        about-oracle, awaken, contacts, dig, forward, go, inbox, learn, oracle-family-scan, oracle-soul-sync-update, recap, rrr, standup, talk-to, trace, xray
+      </div>
+    </div>
+
+    <div class="profile-box">
+      <div class="name">full (26 skills) — All Features</div>
+      <div class="skills">
+        Includes standard + auto-retrospective, contacts-advanced, create-shortcut, dream, feel, philosophy, resonance, schedule, where-we-are, who-are-you
+      </div>
+    </div>
+
+    <div class="profile-box">
+      <div class="name">lab (26 skills) — Full + Experimental</div>
+      <div class="skills">
+        Identical to full profile. Experimental features flagged in skill descriptions.
+      </div>
+    </div>
+  </div>
+
+  <!-- All 26 Skills -->
+  <div class="card">
+    <h2>All 26 Skills</h2>
+    <p style="margin-bottom: 12px; font-size: 0.85rem; color: #d1d5db;">
+      Use any skill with a <code>/</code> prefix. Example: <code>/recap</code>, <code>/rrr</code>, <code>/trace</code>.
+    </p>
+
+    <!-- Core Skills with Subagents -->
+    <h3>Core Skills (3) — Multi-agent Analysis</h3>
+    <div class="skill-grid">
+      <div class="skill-card">
+        <div class="skill-name">/about-oracle</div>
+        <div class="skill-type">Subagent Skill</div>
+        <div class="skill-desc">Origin story, stats, family count, and ecosystem overview. Tells what Oracle is in its own voice.</div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-name">/learn</div>
+        <div class="skill-type">Subagent Skill</div>
+        <div class="skill-desc">Explore and study a codebase with parallel analysis. Supports --fast (1 agent), default (3), --deep (5).</div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-name">/rrr</div>
+        <div class="skill-type">Subagent Skill</div>
+        <div class="skill-desc">Create session retrospective with AI diary and lessons learned. Supports --deep for 5-agent analysis.</div>
+      </div>
+    </div>
+
+    <!-- Database & Registry Skills -->
+    <h3>Database & Registry (4) — Data Access</h3>
+    <div class="skill-grid">
+      <div class="skill-card">
+        <div class="skill-name">/oracle-family-scan</div>
+        <div class="skill-type">Code Skill</div>
+        <div class="skill-desc">Oracle Family Registry — scan, query, welcome. Indexes 186+ Oracles across all teams.</div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-name">/project</div>
+        <div class="skill-type">Code Skill</div>
+        <div class="skill-desc">Clone and track external repos. Learn (study), incubate (development), search/find (locate).</div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-name">/recap</div>
+        <div class="skill-type">Code Skill</div>
+        <div class="skill-desc">Session orientation and awareness. Retro summaries, handoffs, git state, focus areas.</div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-name">/schedule</div>
+        <div class="skill-type">Code Skill</div>
+        <div class="skill-desc">Query schedule via Oracle API (Drizzle DB). Check upcoming events and calendar status.</div>
+      </div>
+    </div>
+
+    <!-- Automation & Workflow Skills -->
+    <h3>Automation & Workflow (10)</h3>
+    <div class="skill-grid">
+      <div class="skill-card">
+        <div class="skill-name">/auto-retrospective</div>
+        <div class="skill-type">Skill</div>
+        <div class="skill-desc">Configure auto-rrr and auto-forward triggers based on context window usage. Auto-scaling.</div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-name">/awaken</div>
+        <div class="skill-type">Skill</div>
+        <div class="skill-desc">Guided Oracle birth and awakening ritual. Default ~20min, --fast ~5min. Create new Oracle.</div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-name">/contacts</div>
+        <div class="skill-type">Skill</div>
+        <div class="skill-desc">Manage Oracle contacts — add, list, remove agents with transport info (maw, inbox, thread).</div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-name">/create-shortcut</div>
+        <div class="skill-type">Skill</div>
+        <div class="skill-desc">Create local skills as shortcuts — makes real /commands in .claude/skills/. Customize commands.</div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-name">/dig</div>
+        <div class="skill-type">Skill</div>
+        <div class="skill-desc">Mine Claude Code sessions — timeline, gaps, repo attribution, session history analysis.</div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-name">/dream</div>
+        <div class="skill-type">Skill</div>
+        <div class="skill-desc">Cross-repo pattern discovery with parallel agents. Finds pains, plans, gains, lost work, feelings.</div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-name">/feel</div>
+        <div class="skill-type">Skill</div>
+        <div class="skill-desc">Capture how the system feels — energy, momentum, burnout, breakthrough. Emotional intelligence.</div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-name">/forward</div>
+        <div class="skill-type">Skill</div>
+        <div class="skill-desc">Create handoff and enter plan mode for next session. Wraps up current work elegantly.</div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-name">/go</div>
+        <div class="skill-type">Skill</div>
+        <div class="skill-desc">Switch skill profiles. Profiles: standard (16), full (26), lab (26+experimental).</div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-name">/inbox</div>
+        <div class="skill-type">Skill</div>
+        <div class="skill-desc">Read and write to Oracle inbox — notes, tasks, messages, handoffs for self or other agents.</div>
+      </div>
+    </div>
+
+    <!-- Identity & Philosophy Skills -->
+    <h3>Identity & Philosophy (7)</h3>
+    <div class="skill-grid">
+      <div class="skill-card">
+        <div class="skill-name">/oracle-soul-sync-update</div>
+        <div class="skill-type">Skill</div>
+        <div class="skill-desc">Sync Oracle instruments with the family. Check and update skills to latest version.</div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-name">/philosophy</div>
+        <div class="skill-type">Skill</div>
+        <div class="skill-desc">Display Oracle philosophy — 5 Principles + Rule 6. Alignment and identity check.</div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-name">/resonance</div>
+        <div class="skill-type">Skill</div>
+        <div class="skill-desc">Capture a resonance moment — when something clicks, sparks joy, or feels right.</div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-name">/standup</div>
+        <div class="skill-type">Skill</div>
+        <div class="skill-desc">Daily standup check — pending tasks, appointments, recent progress, schedule.</div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-name">/talk-to</div>
+        <div class="skill-type">Skill</div>
+        <div class="skill-desc">Talk to another Oracle agent via threads. Collaborate with other agents seamlessly.</div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-name">/trace</div>
+        <div class="skill-type">Skill</div>
+        <div class="skill-desc">Find projects, code, and knowledge across git history, repos, docs. Locate anything across codebase.</div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-name">/where-we-are</div>
+        <div class="skill-type">Skill</div>
+        <div class="skill-desc">Session awareness — quick mid-session check of current topic, timeline, pending items.</div>
+      </div>
+    </div>
+
+    <!-- Personal & Discovery Skills -->
+    <h3>Personal & Discovery (2)</h3>
+    <div class="skill-grid">
+      <div class="skill-card">
+        <div class="skill-name">/who-are-you</div>
+        <div class="skill-type">Skill</div>
+        <div class="skill-desc">Know ourselves — show current AI identity, model info, session stats, Oracle philosophy.</div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-name">/xray</div>
+        <div class="skill-type">Skill</div>
+        <div class="skill-desc">X-ray deep scan — inspect Claude Code auto-memory, installed skills, session history.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Creating Custom Skills -->
+  <div class="card">
+    <h2>Creating Custom Skills</h2>
+    <p style="margin-bottom: 12px; font-size: 0.85rem; color: #d1d5db;">
+      Use <code>/create-shortcut</code> to build local skills as quick /slash-commands without publishing to npm.
+    </p>
+
+    <h3>Create a Custom Skill</h3>
+    <pre>/create-shortcut my-skill "Do something cool"</pre>
+
+    <p style="margin: 8px 0; font-size: 0.82rem; color: #d1d5db;">
+      This creates a real executable skill in <code>.claude/skills/</code> that behaves just like built-in skills. Share the code with teammates or keep it private.
+    </p>
+
+    <div class="highlight">
+      <strong>Why use /create-shortcut?</strong> Faster than npm publishing. Perfect for team-specific workflows, internal tools, and experiments.
+    </div>
+  </div>
+
+  <!-- Recent Updates -->
+  <div class="card">
+    <h2>Recent Updates (v3.6.1)</h2>
+    <ul style="margin-top: 8px;">
+      <li><strong>fix:</strong> Restored rrr DEEP.md from git history (deleted in v3.4.0 refactor)</li>
+      <li><strong>/rrr --deep</strong> now has 5-agent deep analysis spec</li>
+      <li><strong>Profiles simplified:</strong> 3 tiers (standard/full/lab) for easier choice</li>
+      <li><strong>New skills:</strong> /dream (cross-repo pattern discovery), /feel (system energy check)</li>
+      <li><strong>Closed 6 issues:</strong> #195, #179, #166, #194, #165, dream feature</li>
+    </ul>
+  </div>
+
+  <!-- CLI Commands -->
+  <div class="card">
+    <h2>CLI Commands</h2>
+    <table>
+      <tr>
+        <th>Command</th>
+        <th>Description</th>
+      </tr>
+      <tr>
+        <td><code>install [options]</code></td>
+        <td>Install skills to your agent (default: standard profile)</td>
+      </tr>
+      <tr>
+        <td><code>uninstall [options]</code></td>
+        <td>Remove installed skills</td>
+      </tr>
+      <tr>
+        <td><code>select [options]</code></td>
+        <td>Interactive skill picker — choose skills to install</td>
+      </tr>
+      <tr>
+        <td><code>list [options]</code></td>
+        <td>Show all installed skills</td>
+      </tr>
+      <tr>
+        <td><code>profiles [name]</code></td>
+        <td>List available profiles (standard, full, lab)</td>
+      </tr>
+      <tr>
+        <td><code>agents</code></td>
+        <td>List 18 supported AI agents</td>
+      </tr>
+      <tr>
+        <td><code>about</code></td>
+        <td>Show version and status information</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Origin & License -->
+  <div class="card">
+    <h2>Origin & License</h2>
+    <p style="margin-bottom: 8px; font-size: 0.85rem; color: #d1d5db;">
+      <strong>Creator:</strong> <a href="https://github.com/nazt" style="color: #3b82f6; text-decoration: none;">Nat Weerawan</a>
+    </p>
+    <p style="margin-bottom: 8px; font-size: 0.85rem; color: #d1d5db;">
+      <strong>Organization:</strong> <a href="https://github.com/Soul-Brews-Studio" style="color: #3b82f6; text-decoration: none;">Soul Brews Studio</a>
+    </p>
+    <p style="font-size: 0.85rem; color: #d1d5db;">
+      <strong>License:</strong> MIT — Free to use, modify, and distribute
+    </p>
+  </div>
+
+  <!-- Navigation -->
+  <div class="nav-bottom">
+    <a href="/maw/tconsiam/" class="link-btn">← Back to KB</a>
+    <a href="/maw/" class="link-btn">MAW Dashboard</a>
+  </div>
+
+</div>
+
+</body>
+</html>

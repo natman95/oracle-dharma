@@ -1,0 +1,78 @@
+{
+  "version": "1.0",
+  "project": "TCONSIAM ERP",
+  "description": "Solar Street Light Import & Distribution — Full ERP System",
+  "updated": "2026-04-10",
+  "production_url": "http://76.13.221.42:8890/",
+  "kb_url": "http://76.13.221.42/maw/tconsiam/",
+  "base_url": "http://76.13.221.42",
+  "stack": {
+    "api": "Bun + Hono + Drizzle ORM + SQLite",
+    "ui": "React 19 + Vite + Tailwind 4 + Zustand + Recharts",
+    "deploy": "systemd + nginx reverse proxy"
+  },
+  "sections": [
+    {
+      "title": "Knowledge Base Dashboard",
+      "url": "http://76.13.221.42/maw/tconsiam/index.html",
+      "type": "overview",
+      "description": "Main dashboard with system stats, modules, features, architecture, and dev workflow"
+    },
+    {
+      "title": "API Reference",
+      "url": "http://76.13.221.42/maw/tconsiam/api-reference.html",
+      "type": "api",
+      "description": "All 19 API route modules with endpoints, methods, request/response"
+    },
+    {
+      "title": "Architecture Guide",
+      "url": "http://76.13.221.42/maw/tconsiam/guides/architecture.html",
+      "type": "guide",
+      "description": "System architecture, directory structure, data flow, infrastructure"
+    },
+    {
+      "title": "Modules Guide",
+      "url": "http://76.13.221.42/maw/tconsiam/guides/modules.html",
+      "type": "guide",
+      "description": "All 17 modules deep dive — what each does, DB tables, API endpoints, UI components"
+    },
+    {
+      "title": "Development Workflows",
+      "url": "http://76.13.221.42/maw/tconsiam/guides/workflows.html",
+      "type": "guide",
+      "description": "Dev setup, deploy, adding modules, key patterns, common pitfalls"
+    },
+    {
+      "title": "Latest Learnings",
+      "url": "http://76.13.221.42/maw/tconsiam/learnings/latest.html",
+      "type": "learning",
+      "description": "Recent discoveries, patterns, and lessons from the Oracle family"
+    },
+    {
+      "title": "MAW-JS v1.8.0",
+      "url": "http://76.13.221.42/maw/tconsiam/guides/maw-js.html",
+      "type": "guide",
+      "description": "Multi-agent orchestration system — 58+ CLI commands, federation, real-time dashboard"
+    },
+    {
+      "title": "Oracle Skills CLI",
+      "url": "http://76.13.221.42/maw/tconsiam/guides/oracle-skills.html",
+      "type": "guide",
+      "description": "arra-oracle-skills-cli v3.6.1 — 26 skills for 186+ Oracle agents"
+    },
+    {
+      "title": "Thai ERP Modules Reference",
+      "url": "http://76.13.221.42/maw/tconsiam/guides/erp-modules.html",
+      "type": "guide",
+      "description": "35 ERP modules for Thai enterprise — CORE/STANDARD/ADVANCED tiers, Thai legal compliance, FigJam diagram"
+    }
+  ],
+  "stats": {
+    "modules": 17,
+    "features": 8,
+    "migrations": 27,
+    "api_routes": 19,
+    "audit_endpoints": 45
+  },
+  "oracle_note": "This KB is designed to be consumed by Oracle family members via WebFetch. Use /web-learn with the URL to this file to auto-import into your psi/learn/ directory."
+}
